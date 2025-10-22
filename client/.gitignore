@@ -1,0 +1,55 @@
+# -----------------------------
+# Node (Frontend - Vite + React)
+# -----------------------------
+client/node_modules/
+client/.vite/
+client/dist/
+client/.env
+client/.DS_Store
+
+# Log files
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+
+# Editor and system files
+client/.vscode/
+client/.idea/
+client/.cache/
+
+# -----------------------------
+# Python (Backend - Flask)
+# -----------------------------
+server/__pycache__/
+server/*.pyc
+server/*.pyo
+server/.pytest_cache/
+server/instance/
+server/.env
+server/.DS_Store
+server/venv/
+
+# Dependency logs
+server/pip-log.txt
+server/pip-delete-this-directory.txt
+
+# -----------------------------
+# General Project
+# -----------------------------
+.env
+.DS_Store
+*.log
+*.sqlite3
+__pycache__/
+venv/
+dist/
+build/
+
+# Byte-compiled / optimized files
+*.py[cod]
+*$py.class
+
+# Local IDE configs
+.vscode/
+.idea/
+*.swp
