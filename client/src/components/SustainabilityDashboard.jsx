@@ -48,7 +48,7 @@ const SustainabilityDashboard = () => {
       {/* Navigation */}
       <nav className="navbar">
         <div className="nav-container">
-          <h1 className="logo">EcoTrack 🌱</h1>
+          <h1 className="logo">cirqlex  </h1>
           <div className="nav-links">
             <a href="#">Home</a>
             <a href="#">Data</a>
@@ -67,11 +67,11 @@ const SustainabilityDashboard = () => {
       <section className="hero">
         <div className="hero-content">
           <div className="hero-text">
-            <h2>Hello, Josfina Mujora 🌍</h2>
-            <p>Your Sustainability Impact Report</p>
+            <h2>Hello, Sofiya Nzau </h2>
+            <p>Your Sustainability Impact Highlights</p>
           </div>
           <div className="hero-image">
-            <div className="hero-icon">🌱</div>
+            <div className="hero-icon"></div>
           </div>
         </div>
       </section>
@@ -80,7 +80,7 @@ const SustainabilityDashboard = () => {
       <section className="kpi-section">
         <div className="kpi-grid">
           <div className="kpi-card">
-            <div className="kpi-icon">🌱</div>
+            <div className="kpi-icon"></div>
             <div className="kpi-info">
               <h3>Carbon Footprint</h3>
               <p className="kpi-value green">15% lower than last month</p>
@@ -137,7 +137,7 @@ const SustainabilityDashboard = () => {
       <section className="products-section">
         <h3>Corporate Gifts</h3>
         <div className="products-card">
-          <div className="gift-icon">🎁</div>
+          <div className="gift-icon"></div>
           <h4>Eco-Friendly Corporate Gifts</h4>
           <p>Sustainable options for your business</p>
         </div>
@@ -163,7 +163,7 @@ const SustainabilityDashboard = () => {
           </div>
           
           <div className="article-card">
-            <span className="article-icon">🌎</span>
+            <span className="article-icon">c:\Users\royal\Downloads\phase 5 logo  1@2x.png</span>
             <div className="article-text">
               <h4>Green Tech Trends</h4>
               <p>Latest innovations in sustainable technology</p>
