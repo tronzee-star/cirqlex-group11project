@@ -1,38 +1,38 @@
-// src/components/shared/Footer.jsx
 export default function Footer() {
   return (
-    <footer className="bg-green-900 text-white py-8 px-6">
-      <div className="max-w-7xl mx-auto flex flex-row flex-wrap gap-8">
-        {/* CirqleX Section */}
+    <footer className="bg-green-950 text-white py-10">
+
+      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 px-8">
         <div>
-          <h3 className="text-lg font-bold mb-2">CirqleX</h3>
-          <ul className="space-y-1 text-sm">
-            <li><a href="#" className="hover:underline">About Us</a></li>
-            <li><a href="#" className="hover:underline">Sustainability</a></li>
-            <li><a href="#" className="hover:underline">Careers</a></li>
+          <h3 className="text-white text-2xl font-bold mb-2">CirqleX</h3>
+          <p>
+            The power of a circular economy — driving sustainability and waste
+            reduction for a better planet.
+          </p>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold mb-2">Quick Links</h4>
+          <ul className="space-y-1">
+            <li><a href="#" className="hover:text-green-400">Contact Us</a></li>
+            <li><a href="#" className="hover:text-green-400">FAQ</a></li>
+            <li><a href="#" className="hover:text-green-400">Privacy Policy</a></li>
           </ul>
         </div>
 
-        {/* Quick Links Section */}
         <div>
-          <h3 className="text-lg font-bold mb-2">Quick Links</h3>
-          <ul className="space-y-1 text-sm">
-            <li><a href="#" className="hover:underline">Shop</a></li>
-            <li><a href="#" className="hover:underline">Sell</a></li>
-            <li><a href="#" className="hover:underline">Help Center</a></li>
-          </ul>
-        </div>
-
-        {/* Follow Us Section */}
-        <div>
-          <h3 className="text-lg font-bold mb-2">Follow Us</h3>
-          <div className="flex space-x-4 text-sm">
-            <a href="#" className="hover:underline">Facebook</a>
-            <a href="#" className="hover:underline">Instagram</a>
-            <a href="#" className="hover:underline">Twitter</a>
+          <h4 className="text-white font-semibold mb-2">Follow Us</h4>
+          <div className="flex space-x-4">
+            <a href="#" className="hover:text-green-400">Fb</a>
+            <a href="#" className="hover:text-green-400">X</a>
+            <a href="#" className="hover:text-green-400">Ig</a>
           </div>
         </div>
       </div>
+
+      <p className="text-center text-gray-500 mt-8 text-sm">
+        © 2025 CirqleX. All rights reserved.
+      </p>
     </footer>
   );
 }

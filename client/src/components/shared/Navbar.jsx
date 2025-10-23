@@ -1,31 +1,32 @@
-// src/components/shared/Navbar.jsx
 export default function Navbar() {
   return (
-    <header className="bg-green-900 text-white px-6 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Left side: Logo + Nav */}
-        <div className="flex items-center space-x-8">
-          <div className="text-xl font-bold">CIRQLE X</div>
-          <nav className="space-x-6 hidden md:block">
-            <a href="#" className="hover:underline">Home</a>
-            <a href="#" className="hover:underline">Buy</a>
-            <a href="#" className="hover:underline">Sell</a>
-            <a href="#" className="hover:underline">Sustainability</a>
-          </nav>
-        </div>
+    <nav className="flex justify-between items-center py-4 px-8 bg-white shadow fixed w-full top-0 z-50">
+     <div className="flex items-center space-x-2">
+  <img
+    src="./src/assets/phase5-logo1.png"
+    
+    className="w-12 h-12 object-contain"
+  />
+  {/*<span className="text-2xl font-bold text-green-700">CIRQLE X</span>*/}
+</div>
 
-        {/* Right side: Search + Sign In */}
-        <div className="flex items-centre space-x-4">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="px-3 py-1 rounded text-black placeholder-gray-500 focus:outline-none"
-          />
-          <button className="bg-white text-green-900 px-4 py-1 rounded font-semibold">
-            Sign In
-          </button>
-        </div>
+      <ul className="hidden md:flex space-x-8 text-gray-800 font-medium">
+        <li><a href="#home" className="hover:text-green-600">Home</a></li>
+        <li><a href="#buy" className="hover:text-green-600">Buy</a></li>
+        <li><a href="#sell" className="hover:text-green-600">Sell</a></li>
+        <li><a href="#sustainability" className="hover:text-green-600">Sustainability</a></li>
+        <li><a href="#about" className="hover:text-green-600">About us</a></li>
+      </ul>
+      <div className="flex space-x-2">
+        <input
+          type="text"
+          placeholder="Search..."
+          className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring focus:ring-green-200"
+        />
+        <button className="bg-green-700 text-white px-4 py-1 rounded-lg hover:bg-green-800">
+          Sign in
+        </button>
       </div>
-    </header>
+    </nav>
   );
 }
