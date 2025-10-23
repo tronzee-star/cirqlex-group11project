@@ -1,5 +1,5 @@
 // src/pages/auth/SignUp.jsx
-import logo from '../../assets/cirqlex-logo.png'; // adjust path and filename
+import logo from '../../assets/phase5-logo1.png'; // adjust path and filename
 
 export default function SignUp() {
   return (
