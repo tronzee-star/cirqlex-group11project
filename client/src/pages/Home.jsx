@@ -11,7 +11,7 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="grid md:grid-cols-3 gap-8 px-6 py-12 max-w-7xl mx-auto">
+      <section className="flex-row justify-center gap-6 max-w-4xl mx-auto">
         {[
           {
             title: 'Buy Pre-Loved',
