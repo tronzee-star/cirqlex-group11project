@@ -3,11 +3,12 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-green-50 text-center py-16 px-6">
-        <h1 className="text-4xl font-bold text-green-900 mb-4">Shop Sustainably. Live Circularly</h1>
-        <p className="text-lg text-gray-700 max-w-xl mx-auto">
-          Reduce waste and find unique pre-loved items.
-        </p>
+      <section className="relative w-full h-[600px] overflow-hidden">
+        <img
+          src="./src/assets/heros.png"
+          alt="CirqleX Hero"
+        className="absolute inset-0 w-full h-full object-cover"
+        />
       </section>
 
       {/* Features */}
