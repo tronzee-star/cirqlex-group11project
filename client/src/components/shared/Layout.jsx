@@ -1,6 +1,5 @@
-// src/components/shared/Layout.jsx
-import Navbar from './Navbar.jsx';
-import Footer from './Footer.jsx';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 export default function Layout({ children }) {
   return (
