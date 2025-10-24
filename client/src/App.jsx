@@ -8,7 +8,6 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
 
-
 function App() {
   return (
     <Router>

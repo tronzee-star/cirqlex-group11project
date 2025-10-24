@@ -4,7 +4,7 @@ export default function About() {
   return (
     <div className="pt-24 bg-[#f9fafb] text-gray-800 min-h-screen">
       {/* Header Section */}
-      <section className="text-center px-6 py-16 bg-teal-900 text-white">
+      <section className="text-center px-6 py-16 bg-green-900 text-white">
         <h1 className="text-5xl font-bold mb-4">What We Do</h1>
         <p className="text-lg max-w-2xl mx-auto">
        CirqleX is an AI-powered circular economy marketplace that connects people who want to buy, sell, or donate pre-owned, upcycled, and eco-friendly products.Our platform helps reduce landfill waste and encourages responsible consumption by:
