@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import './SustainabilityDashboard.css';
-
+import background from '../assets/images/background.jpeg';
+import logo from '../assets/logos/logo.svg';   
+import chat from '../assets/images/chat score.png';  
+import poster from '../assets/images/poster.jpeg';         
 // Figma assets - you'll need to copy these to your assets folder
 // import imgPhase5Logo1 from '../assets/logos/phase5-logo.png';
 // import imgDepth4Frame2 from '../assets/images/user-avatar.png';
@@ -66,37 +69,8 @@ const SustainabilityDashboard = () => {
 
   return (
     <div className="main-sustainability">
-      {/* Header/Navigation */}
-      <header className="header">
-        <div className="nav-container">
-          <div className="logo-section">
-            {/* <img src={imgPhase5Logo1} alt="Phase 5 Logo" className="main-logo" /> */}
-            <div className="logo-placeholder">cirqlex</div>
-          </div>
-          
-          <nav className="navigation">
-            <a href="#" className="nav-link">Home</a>
-            <a href="#" className="nav-link">Buy</a>
-            <a href="#" className="nav-link">Sell</a>
-            <a href="#" className="nav-link active">sustainability</a>
-            <a href="#" className="nav-link">About us</a>
-          </nav>
-          
-          <div className="nav-actions">
-            <div className="search-container">
-              <input type="text" placeholder="Search" className="search-input" />
-            </div>
-            <button className="logout-btn">log out</button>
-            <div className="user-avatar">
-              {/* <img src={imgDepth4Frame2} alt="User Avatar" /> */}
-              <div className="avatar-placeholder">SN</div>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* AI Introduction Section */}
-      <section className="ai-intro-section">
+      <section className="ai-intro-section" style={{ backgroundImage: `url(${poster})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="ai-container">
           <div className="ai-text-section">
             <p className="welcome-text">Welcome Back</p>
@@ -108,7 +82,7 @@ const SustainabilityDashboard = () => {
           </div>
           <div className="ai-visual-section">
             <div className="cirqlex-logo-small">
-              {/* <img src={imgPhase5Logo1} alt="Cirqlex Logo" /> */}
+              <img src={logo} alt="Cirqlex Logo" className="ai-logo-image" />
               <div className="small-logo-placeholder">
                 <span>Go Cirqle <span className="highlight">X</span></span>
               </div>
@@ -119,11 +93,14 @@ const SustainabilityDashboard = () => {
 
       {/* Hero Welcome Section */}
       <section className="hero-welcome">
-        <div className="hero-image-container">
-          {/* <img src={imgImage10} alt="Sustainability Hero" className="hero-image" /> */}
-          <div className="hero-image-placeholder"></div>
-        </div>
+        
+          <img src={chat} alt="Chat Score" className="hero-image" />
+          
+        
         <div className="welcome-message">
+          {/* <img src={imgDepth4Frame2} alt="User Avatar" className="user-avatar" /> */}
+        
+          <img src={logo} alt="logo" className="user-avatar-logo" />
           <h1>
             Hello, <span className="user-name">Sofiya Nzau</span>! Here is your Impact.
           </h1>
@@ -187,7 +164,7 @@ const SustainabilityDashboard = () => {
         </div>
         
         <div className="metric-item">
-          {/* <img src={imgRectangle} alt="Water" className="metric-icon" /> */}
+        
           <div className="metric-icon water"></div>
           <div className="metric-text">
             <span className="metric-value">200L</span>
@@ -216,16 +193,22 @@ const SustainabilityDashboard = () => {
 
       {/* Corporate Gifts Section */}
       <section className="corporate-gifts">
-        <div className="gifts-container">
-          {/* <img src={imgGoGreenWithYourGifting} alt="Corporate Gifts" className="gifts-image" /> */}
-          <div className="gifts-placeholder">
-            <h3>🌱 Go Green with Your Gifting! </h3>
+        <div className="gifts-container" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+          <div className="gifts-placeholder" style={{ flex: '1', padding: '1rem' }}>
+            <h3> Go Green with Your Gifting! </h3>
             <p>Choose Eco-Friendly Corporate Gifts that reflect your brand's commitment to the planet</p>
           </div>
+          <img src={background} alt="Go Green with Your Gifting" className="gifts-image" style={{ 
+            flex: '1', 
+            maxWidth: '50%', 
+            height: '300px', 
+            objectFit: 'contain', 
+            borderRadius: '8px' 
+          }} />
         </div>
       </section>
 
-      {/* Sustainability Tips */}
+              {/* Sustainability Tips */}
       <section className="sustainability-tips">
         <div className="tip-card">
           <div className="tip-icon"></div>

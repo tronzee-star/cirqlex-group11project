@@ -20,7 +20,7 @@ export default function Navbar() {
           <li><a href="#home" className="hover:text-green-600 transition">Home</a></li>
           <li><a href="#buy" className="hover:text-green-600 transition">Buy</a></li>
           <li><a href="#sell" className="hover:text-green-600 transition">Sell</a></li>
-          <li><a href="#sustainability" className="hover:text-green-600 transition">Sustainability</a></li>
+          <li><Link to="/sustainability" className="hover:text-green-600 transition">Sustainability</Link></li>
           <li><a href="#about" className="hover:text-green-600 transition">About Us</a></li>
         </ul>
 
