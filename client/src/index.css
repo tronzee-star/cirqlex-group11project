@@ -2,22 +2,19 @@
 
 
 :root {
+  color-scheme: light dark;
+  color: #000000;
+  background-color: transparent; /* FIX: was #ffffff */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  :root {
-  color-scheme: light dark;
-  color: #000000;
-  background-color: #ffffff;
-}
-
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
 
 a {
   font-weight: 500;
@@ -32,7 +29,10 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: transparent; /* FIX */
 }
+
+
 
 h1 {
   font-size: 3.2em;
@@ -71,11 +71,3 @@ button:focus-visible {
   }
 }
 
-/* Hide Chrome's autofill icon (three dots) */
-input::-webkit-credentials-auto-fill-button {
-  visibility: hidden;
-  display: none !important;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-}
