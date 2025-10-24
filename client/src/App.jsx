@@ -13,7 +13,7 @@ function App() {
     <Router>
       <Navbar />
       {/* add top padding so fixed navbar doesn't cover content */}
-      <div className="pt-20">
+      <div className="pt-16" bg white minn-h-screen>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/buyer-dashboard" element={<BuyerDashboard />} />

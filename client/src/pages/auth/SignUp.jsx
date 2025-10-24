@@ -1,63 +1,120 @@
-// src/pages/auth/SignUp.jsx
-import logo from '../../assets/phase5-logo1.png'; // adjust path and filename
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function SignUp() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("✅ Account created successfully:", data);
+        alert("Account created successfully! Please sign in.");
+        navigate("/signin"); // redirect to sign-in page
+      } else {
+        alert(data.message || "Sign-up failed. Try again.");
+      }
+    } catch (error) {
+      console.error("❌ Error signing up:", error);
+      alert("Server error. Please try again later.");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-teal-600 text-white flex flex-col">
-      {/* Top Navigation */}
-      <header className="flex justify-between items-center px-6 py-4">
-        <img src={logo} alt="CirqleX Logo" className="h-8 w-auto" />
-        <nav className="space-x-6 hidden md:flex items-center">
-          <a href="/" className="hover:underline">Home</a>
-          <a href="/about" className="hover:underline">About Us</a>
-          <a href="/signin" className="bg-white text-teal-600 px-4 py-1 rounded font-semibold">Sign In</a>
-        </nav>
-      </header>
+    <section className="min-h-screen flex items-center justify-center bg-green-50 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center text-green-800 mb-6">
+          Create an Account
+        </h2>
 
-      {/* Sign Up Form */}
-      <main className="flex-grow flex items-center justify-center px-4">
-        <div className="bg-white text-black p-8 rounded shadow-lg w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">Create your account</h2>
-          <form className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium">Email</label>
-              <input
-                type="email"
-                placeholder="gloria@gmail.com"
-                className="mt-1 w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="mt-1 w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Confirm Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="mt-1 w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-teal-600 text-white py-2 rounded font-semibold hover:bg-teal-700"
-            >
-              Sign Up
-            </button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-gray-500">Or continue with</div>
-          <div className="mt-4 flex flex-col gap-3">
-            <button className="w-full border py-2 rounded hover:bg-gray-100">Continue with Google</button>
-            <button className="w-full border py-2 rounded hover:bg-gray-100">Continue with Apple</button>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
+          <div>
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              autoComplete="off"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+            />
           </div>
-        </div>
-      </main>
-    </div>
+
+          {/* Email */}
+          <div>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              autoComplete="new-email"
+              inputMode="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              autoComplete="off"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+            />
+          </div>
+
+          {/* Sign Up Button */}
+          <button
+            type="submit"
+            className="w-full bg-green-700 hover:bg-green-800 text-white font-medium py-2 rounded-lg transition"
+          >
+            Sign Up
+          </button>
+        </form>
+
+        {/* Sign In Redirect */}
+        <p className="text-sm text-gray-600 text-center mt-4">
+          Already have an account?{" "}
+          <Link to="/signin" className="text-green-700 hover:underline">
+            Sign In
+          </Link>
+        </p>
+
+        {/* Back to Home */}
+        <p className="text-sm text-gray-600 text-center mt-2">
+          <Link to="/" className="text-green-600 hover:underline">
+            ← Back to Home
+          </Link>
+        </p>
+      </div>
+    </section>
   );
 }
