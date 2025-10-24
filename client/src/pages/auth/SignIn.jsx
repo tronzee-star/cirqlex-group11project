@@ -1,126 +1,99 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState } from "react";
+import { FaUser, FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-export default function SignIn() {
+const LoginPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
 
-  // Handle input changes
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log(" Signed in successfully:", data);
-        navigate("/buyer-dashboard"); // Redirect to dashboard
-      } else if (response.status === 404) {
-        alert("No account found. Redirecting to Sign Up...");
-        navigate("/signup");
-      } else {
-        alert(data.message || "Sign-in failed. Please try again.");
-      }
-    } catch (error) {
-      console.error(" Error signing in:", error);
-      alert("Server error. Please try again later.");
+    // Mock login logic
+    if (email === "test@example.com" && password === "password123") {
+      alert("Login successful!");
+      navigate("/dashboard");
+    } else {
+      alert("No account found. Redirecting to signup...");
+      navigate("/signup");
     }
   };
 
   return (
-    <div className="min-h-screen bg-teal-900 flex flex-col">
-      {/* Navbar */}
-     {/*<nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm">*/}
-        <div className="flex items-center space-x-2">
-        
-           
-        </div>
-
-        <div className="flex items-center space-x-6 text-gray-700 font-medium">
-        
-        
-        </div>
+    <div
+      className="flex items-center justify-center min-h-screen bg-cover bg-center"
       
+    >
+      <div className="bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl rounded-2xl p-8 w-[350px] text-white">
+        <h2 className="text-3xl font-bold mb-2">Login</h2>
+        <p className="text-sm mb-6 opacity-80">
+          Welcome back! Please login to your account
+        </p>
 
-      {/* Sign In Card */}
-      <div className="flex flex-1 items-center justify-center px-4">
-        <div className="bg-gray-100 rounded-lg shadow-lg w-full max-w-md p-8 text-center">
-          <h2 className="text-lg font-semibold mb-6 text-gray-800">
-            Welcome back
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          {/* Username Field */}
+          <div className="flex items-center bg-white/20 rounded-lg px-3 py-2">
+            <FaUser className="text-white/80 mr-3" />
             <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
+              type="text"
+              placeholder="User Name"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-transparent outline-none text-white placeholder-white/70 w-full"
               required
-              className="w-full bg-gray-200 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
             />
-
-            {/* Password */}
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-200 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-            />
-
-            {/* Log in button */}
-            <button
-              type="submit"
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-md transition"
-            >
-              Log in
-            </button>
-          </form>
-
-          {/* Forgot Password */}
-          <p className="text-sm text-green-800 mt-3 hover:underline cursor-pointer">
-            Forgot Password?
-          </p>
-
-          {/* Continue with */}
-          <p className="text-sm text-gray-600 mt-4">Or continue with</p>
-
-          <div className="flex justify-center space-x-4 mt-3">
-            <button className="bg-gray-200 hover:bg-gray-300 font-semibold text-sm py-2 px-4 rounded-md transition">
-              Continue with Google
-            </button>
-            <button className="bg-gray-200 hover:bg-gray-300 font-semibold text-sm py-2 px-4 rounded-md transition">
-              Continue with Apple
-            </button>
           </div>
 
-          {/* Sign Up Redirect */}
-          <p className="text-sm text-green-900 mt-5">
-            Don’t have an account?{" "}
-            <button
-              onClick={() => navigate("/signup")}
-              className="text-green-700 hover:underline font-medium"
-            >
-              Sign up
-            </button>
-          </p>
-        </div>
+          {/* Password Field */}
+          <div className="flex items-center bg-white/20 rounded-lg px-3 py-2">
+            <FaLock className="text-white/80 mr-3" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-transparent outline-none text-white placeholder-white/70 w-full"
+              required
+            />
+          </div>
+
+          {/* Remember Me */}
+          <div className="flex items-center justify-between text-sm mt-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="accent-green-500"
+              />
+              Remember me
+            </label>
+          </div>
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="w-full py-2 mt-4 text-white font-semibold rounded-lg bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 transition"
+          >
+            Login
+          </button>
+        </form>
+
+        {/* Signup Link */}
+        <p className="text-sm mt-4 text-center text-white/80">
+          Don’t have an account?{" "}
+          <span
+            onClick={() => navigate("/signup")}
+            className="text-green-400 cursor-pointer hover:underline"
+          >
+            Signup
+          </span>
+        </p>
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;

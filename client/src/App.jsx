@@ -6,8 +6,10 @@ import BuyerDashboard from './pages/buyerDashboard';
 import Shop from './pages/shop';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
-import SustainabilityDashboard from './components/SustainabilityDashboard';
 
+
+import About from './pages/About';
+        development
 
 function App() {
   return (
@@ -19,7 +21,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
           <Route path="/shop" element={<Shop />} />
-          <Route path="/sustainability" element={<SustainabilityDashboard />} />
+
+           <Route path="/about" element={<About />} />
+        development
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
