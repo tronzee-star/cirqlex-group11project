@@ -23,13 +23,14 @@ export default function Features() {
 
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-6xl mx-auto text-center px-6">
-      
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-2xl mx-auto text-center px-6">
+        {/* Force side-by-side layout */}
+        <div className="flex flex-row justify-center items-stretch gap-8 flex-wrap">
+
           {features.map((feature, index) => (
             <div
               key={index}
-              className="text-center bg-white-50 p-6 rounded-xl shadow hover:shadow-lg transition"
+              className="flex-1 text-center bg-gray-50 p-8 rounded-xl shadow hover:shadow-lg transition"
             >
               <img
                 src={feature.img}

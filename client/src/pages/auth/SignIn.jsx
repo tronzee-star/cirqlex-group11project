@@ -1,12 +1,12 @@
 // src/pages/auth/SignIn.jsx
-import logo from '../../assets/phase5-logo1.png'; // Adjust path and filename if needed
+import logo from '../../assets/phase5-logo1.png'; 
 
 export default function SignIn() {
   return (
     <div className="min-h-screen bg-teal-600 text-white flex flex-col">
       {/* Top Navigation */}
       <header className="flex justify-between items-center px-6 py-4">
-        <img src={logo} alt="CirqleX Logo" className="h-10 w-auto" />
+       
         <nav className="space-x-6 flex items-center">
           <a href="/" className="hover:underline">Home</a>
           <a href="/about" className="hover:underline">About Us</a>

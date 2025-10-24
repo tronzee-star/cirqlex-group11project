@@ -4,6 +4,9 @@ import Footer from "./components/shared/Footer";
 import Home from './pages/Home';
 import BuyerDashboard from './pages/buyerDashboard';
 import Shop from './pages/shop';
+import SignIn from "./pages/auth/SignIn";
+import SignUp from "./pages/auth/SignUp";
+
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/signin" element={<SignIn />} />
+<Route path="/signup" element={<SignUp />} />
+
         </Routes>
       </div>
       <Footer />
