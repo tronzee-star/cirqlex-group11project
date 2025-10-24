@@ -121,7 +121,7 @@ const SustainabilityDashboard = () => {
       <section className="hero-welcome">
         <div className="hero-image-container">
           {/* <img src={imgImage10} alt="Sustainability Hero" className="hero-image" /> */}
-          <div className="hero-image-placeholder">🌱</div>
+          <div className="hero-image-placeholder"></div>
         </div>
         <div className="welcome-message">
           <h1>
@@ -179,7 +179,7 @@ const SustainabilityDashboard = () => {
       <section className="impact-metrics">
         <div className="metric-item">
           {/* <img src={imgImage4} alt="Trees" className="metric-icon" /> */}
-          <div className="metric-icon trees">🌳</div>
+          <div className="metric-icon trees"></div>
           <div className="metric-text">
             <span className="metric-value">3 Trees</span>
             <span className="metric-label">Planted</span>
@@ -188,7 +188,7 @@ const SustainabilityDashboard = () => {
         
         <div className="metric-item">
           {/* <img src={imgRectangle} alt="Water" className="metric-icon" /> */}
-          <div className="metric-icon water">💧</div>
+          <div className="metric-icon water"></div>
           <div className="metric-text">
             <span className="metric-value">200L</span>
             <span className="metric-label">water saved</span>
@@ -197,7 +197,7 @@ const SustainabilityDashboard = () => {
         
         <div className="metric-item">
           {/* <img src={imgImage5} alt="Recycling" className="metric-icon" /> */}
-          <div className="metric-icon recycling">♻️</div>
+          <div className="metric-icon recycling"></div>
           <div className="metric-text">
             <span className="metric-value">5KG</span>
             <span className="metric-label">Recycled</span>
@@ -206,7 +206,7 @@ const SustainabilityDashboard = () => {
         
         <div className="metric-item">
           {/* <img src={imgImage6} alt="Energy" className="metric-icon" /> */}
-          <div className="metric-icon energy">⚡</div>
+          <div className="metric-icon energy"></div>
           <div className="metric-text">
             <span className="metric-value">10 Kwh</span>
             <span className="metric-label">Energy Saved</span>
@@ -219,7 +219,7 @@ const SustainabilityDashboard = () => {
         <div className="gifts-container">
           {/* <img src={imgGoGreenWithYourGifting} alt="Corporate Gifts" className="gifts-image" /> */}
           <div className="gifts-placeholder">
-            <h3>🌱 Go Green with Your Gifting! �</h3>
+            <h3>🌱 Go Green with Your Gifting! </h3>
             <p>Choose Eco-Friendly Corporate Gifts that reflect your brand's commitment to the planet</p>
           </div>
         </div>
@@ -228,7 +228,7 @@ const SustainabilityDashboard = () => {
       {/* Sustainability Tips */}
       <section className="sustainability-tips">
         <div className="tip-card">
-          <div className="tip-icon">🔄</div>
+          <div className="tip-icon"></div>
           <div className="tip-content">
             <h4>Reduce, Reuse, Recycle</h4>
             <p>Minimize waste by reducing consumption, reusing items, and recycling materials.</p>
@@ -236,7 +236,7 @@ const SustainabilityDashboard = () => {
         </div>
         
         <div className="tip-card">
-          <div className="tip-icon">🌿</div>
+          <div className="tip-icon"></div>
           <div className="tip-content">
             <h4>Choose Sustainable Products</h4>
             <p>Opt for products made from sustainable materials and with minimal environmental impact.</p>
@@ -244,7 +244,7 @@ const SustainabilityDashboard = () => {
         </div>
         
         <div className="tip-card">
-          <div className="tip-icon">💧</div>
+          <div className="tip-icon"></div>
           <div className="tip-content">
             <h4>Conserve Water and Energy</h4>
             <p>Save resources by conserving water and energy at home and in your daily life.</p>
