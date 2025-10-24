@@ -1,31 +1,43 @@
+import { Link } from "react-router-dom";
+import Logo from "../../assets/phase5-logo1.png";
+
 export default function Navbar() {
   return (
-    <nav className="flex justify-between items-center py-4 px-8 bg-white shadow fixed w-full top-0 z-50">
-     <div className="flex items-center space-x-2">
-  <img
-    src="./src/assets/phase5-logo1.png"
-    
-    className="w-12 h-12 object-contain"
-  />
-  {/*<span className="text-2xl font-bold text-green-700">CIRQLE X</span>*/}
-</div>
+    <nav className="fixed top-0 left-0 w-full bg-white border-b border-gray-200 shadow-sm z-50">
+      <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
+        
+        {/* Logo (clickable) */}
+        <Link to="/" className="flex items-center space-x-2">
+          <img
+            src={Logo}
+            alt="Cirqle X Logo"
+            className="w-10 h-10 object-contain"
+          />
+        </Link>
 
-      <ul className="hidden md:flex space-x-8 text-gray-800 font-medium">
-        <li><a href="#home" className="hover:text-green-600">Home</a></li>
-        <li><a href="#buy" className="hover:text-green-600">Buy</a></li>
-        <li><a href="#sell" className="hover:text-green-600">Sell</a></li>
-        <li><a href="#sustainability" className="hover:text-green-600">Sustainability</a></li>
-        <li><a href="#about" className="hover:text-green-600">About us</a></li>
-      </ul>
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring focus:ring-green-200"
-        />
-        <button className="bg-green-700 text-white px-4 py-1 rounded-lg hover:bg-green-800">
-          Sign in
-        </button>
+        {/* Navigation Links */}
+        <ul className="flex items-center space-x-8 text-sm font-medium text-gray-800">
+          <li><a href="#home" className="hover:text-green-600 transition">Home</a></li>
+          <li><a href="#buy" className="hover:text-green-600 transition">Buy</a></li>
+          <li><a href="#sell" className="hover:text-green-600 transition">Sell</a></li>
+          <li><a href="#sustainability" className="hover:text-green-600 transition">Sustainability</a></li>
+          <li><a href="#about" className="hover:text-green-600 transition">About Us</a></li>
+        </ul>
+
+        {/* Search + Sign In */}
+        <div className="flex items-center space-x-3">
+          <input
+            type="text"
+            placeholder="Search"
+            className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-200"
+          />
+          <Link
+            to="/signin"
+            className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-1.5 rounded-lg shadow-sm transition"
+          >
+            Sign In
+          </Link>
+        </div>
       </div>
     </nav>
   );
