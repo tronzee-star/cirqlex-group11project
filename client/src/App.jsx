@@ -6,7 +6,7 @@ import BuyerDashboard from './pages/buyerDashboard';
 import Shop from './pages/shop';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
-
+import About from './pages/About';
 
 function App() {
   return (
@@ -18,6 +18,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
           <Route path="/shop" element={<Shop />} />
+           <Route path="/about" element={<About />} />
           <Route path="/signin" element={<SignIn />} />
 <Route path="/signup" element={<SignUp />} />
 

@@ -3,7 +3,8 @@ import Logo from "../../assets/phase5-logo1.png";
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 w-full bg-white border-b border-gray-200 shadow-sm z-50">
+    <nav className="fixed top-0 left-0 w-full bg-white/60 backdrop-blur-sm border-b border-gray-200 shadow-sm z-50">
+
       <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
         
         {/* Logo (clickable) */}
@@ -16,12 +17,12 @@ export default function Navbar() {
         </Link>
 
         {/* Navigation Links */}
-        <ul className="flex items-center space-x-8 text-sm font-medium text-gray-800">
-          <li><a href="#home" className="hover:text-green-600 transition">Home</a></li>
+        <ul className="flex items-center space-x-8 text-sm font-bold text-black-600">
+          <li><a href="#home" className="hover:text-black-400 transition">Home</a></li>
+          <li><Link to="/about">About Us</Link></li>
           <li><a href="#buy" className="hover:text-green-600 transition">Buy</a></li>
           <li><a href="#sell" className="hover:text-green-600 transition">Sell</a></li>
           <li><a href="#sustainability" className="hover:text-green-600 transition">Sustainability</a></li>
-          <li><a href="#about" className="hover:text-green-600 transition">About Us</a></li>
         </ul>
 
         {/* Search + Sign In */}
