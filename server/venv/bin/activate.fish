@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV '/mnt/c/Users/USER/Documents/bonnie'"'"'s/Moringa/Phase-5/one more try/cirqlex-group11project/server/venv'
+set -gx VIRTUAL_ENV /home/adduser/Development/phase-5/cirqlex-group11project/server/venv
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

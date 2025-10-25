@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 }
+
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
