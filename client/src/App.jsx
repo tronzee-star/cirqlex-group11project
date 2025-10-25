@@ -3,6 +3,7 @@ import Navbar from "./components/shared/Navbar";
 import Footer from "./components/shared/Footer";
 import Home from './pages/Home';
 import BuyerDashboard from './pages/buyerDashboard';
+import SellerDashboard from './pages/sellerDashboard';
 import Shop from './pages/shop';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
+          <Route path="/seller-dashboard" element={<SellerDashboard />} />
           <Route path="/shop" element={<Shop />} />
            <Route path="/about" element={<About />} />
           <Route path="/signin" element={<SignIn />} />
