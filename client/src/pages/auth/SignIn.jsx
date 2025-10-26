@@ -3,6 +3,8 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:5001/api";
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -14,40 +16,26 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
-
-    const payload = {
-      email: email.trim().toLowerCase(),
-      password,
-    };
-
-    if (!payload.email || !payload.password) {
-      setError("Please enter your email and password.");
-      return;
-    }
-
     try {
-      setIsSubmitting(true);
-      const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
-      const response = await fetch(`${API_BASE}/auth/login`, {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ email, password }),
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        login(data.user, data.access_token);
-        navigate("/buyer-dashboard");
-      } else {
-        setError(data.error || "Login failed. Please try again.");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.error || data.message || "Login failed");
+        return;
       }
+      // store tokens and user
+      if (data.access_token) localStorage.setItem("access_token", data.access_token);
+      if (data.refresh_token) localStorage.setItem("refresh_token", data.refresh_token);
+      localStorage.setItem("current_user", JSON.stringify(data.user || {}));
+      alert("Login successful!");
+      navigate("/dashboard");
     } catch (err) {
-      console.error("Error logging in:", err);
-      setError("Server error. Please try again later.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Login error:", err);
+      alert("Network/server error. Please try again.");
     }
   };
 

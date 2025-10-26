@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:5001/api";
+
 export default function SignUp() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -9,6 +11,7 @@ export default function SignUp() {
     name: "",
     email: "",
     password: "",
+    role: "customer",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -33,21 +36,32 @@ export default function SignUp() {
     }
 
     try {
-      setIsSubmitting(true);
-      const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
-      const response = await fetch(`${API_BASE}/auth/signup`, {
+      // backend expects username, email, password, role
+      const payload = {
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      };
+
+      const response = await fetch(`${API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        login(data.user, data.access_token);
-        navigate("/buyer-dashboard");
+        console.log("✅ Account created successfully:", data);
+        // store tokens if present
+        if (data.access_token) localStorage.setItem("access_token", data.access_token);
+        if (data.refresh_token) localStorage.setItem("refresh_token", data.refresh_token);
+        localStorage.setItem("current_user", JSON.stringify(data.user || {}));
+        alert("Account created successfully!");
+        navigate("/signin");
       } else {
-        setError(data.error || "Sign-up failed. Try again.");
+        alert(data.error || data.message || "Sign-up failed. Try again.");
       }
     } catch (err) {
       console.error("Error signing up:", err);
@@ -58,15 +72,11 @@ export default function SignUp() {
   };
 
   return (
-    <section className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#062b22] via-[#0c4f3f] to-[#0c7a60] px-4 py-10">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/10 p-10 text-white shadow-2xl backdrop-blur-xl">
-        <h2 className="mb-3 text-center text-3xl font-semibold">Create an Account</h2>
-
-        {error ? (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </div>
-        ) : null}
+  <section className="min-h-screen flex items-center justify-center bg-green-50 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center text-green-800 mb-6">
+          Create an Account
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
@@ -110,6 +120,19 @@ export default function SignUp() {
               required
               className="w-full bg-transparent text-white placeholder-white/70 outline-none"
             />
+          </div>
+          {/* Role */}
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">I am a</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+            >
+              <option value="customer">Customer</option>
+              <option value="vendor">Vendor</option>
+            </select>
           </div>
 
           {/* Sign Up Button */}
