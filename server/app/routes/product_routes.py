@@ -1,0 +1,147 @@
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from .. import db
+from ..models import Product, Order, User
+
+product_bp = Blueprint('products', __name__)
+
+
+@product_bp.route('/', methods=['GET'])
+def get_products():
+    """Get all products."""
+    products = Product.query.order_by(Product.created_at.desc()).all()
+    return jsonify({'items': [p.to_dict() for p in products]})
+
+
+@product_bp.route('/mine', methods=['GET'])
+@jwt_required()
+def get_my_products():
+    """Get listings created by current user."""
+    user_id = get_jwt_identity()
+    products = Product.query.filter_by(owner_id=user_id).order_by(Product.created_at.desc()).all()
+    return jsonify({'items': [p.to_dict() for p in products]})
+
+
+@product_bp.route('/stats', methods=['GET'])
+@jwt_required()
+def get_product_stats():
+    """Return aggregated stats for the current user."""
+    user_id = get_jwt_identity()
+
+    total_listings = Product.query.filter_by(owner_id=user_id).count()
+    total_sales_q = db.session.query(db.func.count(Order.id)).join(Product).filter(Product.owner_id == user_id)
+    total_sales = total_sales_q.scalar() or 0
+
+    revenue_q = (
+        db.session.query(db.func.coalesce(db.func.sum(Order.price), 0.0))
+        .join(Product)
+        .filter(Product.owner_id == user_id)
+    )
+    total_revenue = revenue_q.scalar() or 0.0
+
+    buyer_orders = Order.query.filter_by(buyer_id=user_id).order_by(Order.purchased_at.desc()).all()
+    purchases_count = len(buyer_orders)
+    purchases_total = sum(order.price for order in buyer_orders)
+
+    return jsonify({
+        'listings': total_listings,
+        'sales': total_sales,
+        'revenue': total_revenue,
+        'purchases_count': purchases_count,
+        'purchases_total': purchases_total,
+        'recent_orders': [order.to_dict(include_product=True) for order in buyer_orders],
+    })
+
+
+@product_bp.route('/orders', methods=['GET'])
+@jwt_required()
+def get_my_orders():
+    """Orders placed by the current user."""
+    user_id = get_jwt_identity()
+    orders = Order.query.filter_by(buyer_id=user_id).order_by(Order.purchased_at.desc()).all()
+    return jsonify({'items': [order.to_dict(include_product=True) for order in orders]})
+
+
+@product_bp.route('/<int:product_id>', methods=['GET'])
+def get_product(product_id):
+    """Get a single product by ID."""
+    product = Product.query.get_or_404(product_id)
+    return jsonify(product.to_dict())
+
+
+@product_bp.route('/', methods=['POST'])
+@jwt_required()
+def create_product():
+    """Create a new product listing."""
+    user_id = get_jwt_identity()
+    data = request.get_json() or {}
+
+    if not data.get('title'):
+        return jsonify({'error': 'title is required'}), 400
+
+    product = Product(
+        title=data.get('title'),
+        description=data.get('description', ''),
+        price=float(data.get('price', 0)),
+        condition=data.get('condition'),
+        category=data.get('category'),
+        location=data.get('location'),
+        image_url=data.get('image_url'),
+        is_donation=data.get('is_donation', False),
+        owner_id=user_id
+    )
+
+    db.session.add(product)
+    db.session.commit()
+
+    return jsonify(product.to_dict()), 201
+
+
+@product_bp.route('/<int:product_id>', methods=['PUT'])
+@jwt_required()
+def update_product(product_id):
+    """Update a product."""
+    user_id = get_jwt_identity()
+    product = Product.query.get_or_404(product_id)
+
+    # Check ownership
+    if product.owner_id != user_id:
+        return jsonify({'error': 'unauthorized'}), 403
+
+    data = request.get_json() or {}
+
+    # Update fields
+    if 'title' in data:
+        product.title = data['title']
+    if 'description' in data:
+        product.description = data['description']
+    if 'price' in data:
+        product.price = float(data['price'])
+    if 'condition' in data:
+        product.condition = data['condition']
+    if 'category' in data:
+        product.category = data['category']
+    if 'location' in data:
+        product.location = data['location']
+    if 'image_url' in data:
+        product.image_url = data['image_url']
+
+    db.session.commit()
+    return jsonify(product.to_dict())
+
+
+@product_bp.route('/<int:product_id>', methods=['DELETE'])
+@jwt_required()
+def delete_product(product_id):
+    """Delete a product."""
+    user_id = get_jwt_identity()
+    product = Product.query.get_or_404(product_id)
+
+    # Check ownership
+    if product.owner_id != user_id:
+        return jsonify({'error': 'unauthorized'}), 403
+
+    db.session.delete(product)
+    db.session.commit()
+
+    return jsonify({'message': 'product deleted'}), 200
