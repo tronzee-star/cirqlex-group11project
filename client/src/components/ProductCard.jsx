@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const ProductCard = ({ image, name, price }) => {
+  const [imgSrc, setImgSrc] = useState(image);
+  const fallbackImage = 'https://via.placeholder.com/400x320?text=Image+Unavailable';
+
+  const handleImageError = () => {
+    setImgSrc(fallbackImage);
+  };
+
   return (
-    <div className="bg-white rounded-lg overflow-hidden p-4">
-      <div className="aspect-w-1 aspect-h-1 w-full mb-3">
+    <div className="bg-[#F5F5F5] border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+      <div className="bg-white">
         <img
-          src={image}
+          src={imgSrc}
           alt={name}
-          className="w-full h-40 object-cover rounded-lg"
+          onError={handleImageError}
+          className="w-full h-44 object-cover"
         />
       </div>
-      <h3 className="text-sm font-medium text-gray-900 mb-2">{name}</h3>
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-900">ksh {price}</p>
-        <button className="bg-green-500 text-white text-xs px-3 py-1 rounded hover:bg-green-600 transition-colors">
+      <div className="p-4 text-center space-y-3">
+        <h3 className="text-sm font-semibold text-gray-800 capitalize">{name}</h3>
+        <p className="text-sm text-gray-600">ksh {price}</p>
+        <button className="inline-flex items-center justify-center w-full rounded-full bg-[#00A651] px-4 py-2 text-sm font-semibold text-white hover:bg-[#009245] transition-colors">
           Add to Cart
         </button>
       </div>
