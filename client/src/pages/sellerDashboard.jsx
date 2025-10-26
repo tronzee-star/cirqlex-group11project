@@ -35,7 +35,7 @@ const SellerDashboard = () => {
     const baseClasses =
       "flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm transition";
     const activeClasses = "bg-white text-[#0C7A60] shadow";
-    const inactiveClasses = "text-emerald-100 hover:bg-white/10 hover:text-white";
+    const inactiveClasses = "bg-[#0A5A46] text-emerald-50 hover:bg-[#0b6c54] hover:text-white";
 
     if (to) {
       return (
@@ -54,7 +54,7 @@ const SellerDashboard = () => {
       <button
         key={label}
         type="button"
-        className={`${baseClasses} ${inactiveClasses} cursor-not-allowed opacity-70`}
+        className={`${baseClasses} ${inactiveClasses} cursor-not-allowed opacity-60`}
         disabled
       >
         <Icon className="text-lg" />

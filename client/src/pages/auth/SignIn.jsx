@@ -52,14 +52,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center"
-      
-    >
-      <div className="bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl rounded-2xl p-8 w-[350px] text-white">
-        <h2 className="text-3xl font-bold mb-2">Login</h2>
-        <p className="text-sm mb-6 opacity-80">
-          Welcome back! Please login to your account
+    <section className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#062b22] via-[#0c4f3f] to-[#0c7a60] px-4 py-10">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/10 p-10 text-white shadow-2xl backdrop-blur-xl">
+        <h2 className="mb-3 text-center text-3xl font-semibold">Welcome Back</h2>
+        <p className="mb-6 text-center text-sm text-white/80">
+          Sign in to manage your circular marketplace experience.
         </p>
 
         {error ? (
@@ -70,8 +67,8 @@ const LoginPage = () => {
 
         <form onSubmit={handleLogin} className="space-y-4">
           {/* Username Field */}
-          <div className="flex items-center bg-white/20 rounded-lg px-3 py-2">
-            <FaUser className="text-white/80 mr-3" />
+          <div className="flex items-center rounded-2xl border border-white/20 bg-white/10 px-4 py-3">
+            <FaUser className="mr-3 text-lg text-white/80" />
             <input
               type="text"
               placeholder="User Name"
@@ -83,8 +80,8 @@ const LoginPage = () => {
           </div>
 
           {/* Password Field */}
-          <div className="flex items-center bg-white/20 rounded-lg px-3 py-2">
-            <FaLock className="text-white/80 mr-3" />
+          <div className="flex items-center rounded-2xl border border-white/20 bg-white/10 px-4 py-3">
+            <FaLock className="mr-3 text-lg text-white/80" />
             <input
               type="password"
               placeholder="Password"
@@ -96,7 +93,7 @@ const LoginPage = () => {
           </div>
 
           {/* Remember Me */}
-          <div className="flex items-center justify-between text-sm mt-2">
+          <div className="mt-2 flex items-center justify-between text-sm">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -112,24 +109,25 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2 mt-4 text-white font-semibold rounded-lg bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            className="mt-6 w-full rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-600 py-3 text-sm font-semibold tracking-wide text-white transition hover:from-emerald-500 hover:to-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting ? "Signing in..." : "Login"}
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
         {/* Signup Link */}
-        <p className="text-sm mt-4 text-center text-white/80">
+        <p className="mt-6 text-center text-sm text-white/80">
           Don’t have an account?{" "}
-          <span
+          <button
+            type="button"
             onClick={() => navigate("/signup")}
-            className="text-green-400 cursor-pointer hover:underline"
+            className="font-medium text-emerald-200 hover:underline"
           >
-            Signup
-          </span>
+            Create one
+          </button>
         </p>
       </div>
-    </div>
+    </section>
   );
 };
 

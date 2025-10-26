@@ -58,11 +58,9 @@ export default function SignUp() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-green-50 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-semibold text-center text-green-800 mb-6">
-          Create an Account
-        </h2>
+    <section className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#062b22] via-[#0c4f3f] to-[#0c7a60] px-4 py-10">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/10 p-10 text-white shadow-2xl backdrop-blur-xl">
+        <h2 className="mb-3 text-center text-3xl font-semibold">Create an Account</h2>
 
         {error ? (
           <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
@@ -72,7 +70,7 @@ export default function SignUp() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
-          <div>
+          <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3">
             <input
               type="text"
               name="name"
@@ -81,12 +79,12 @@ export default function SignUp() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="w-full bg-transparent text-white placeholder-white/70 outline-none"
             />
           </div>
 
           {/* Email */}
-          <div>
+          <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3">
             <input
               type="email"
               name="email"
@@ -96,12 +94,12 @@ export default function SignUp() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="w-full bg-transparent text-white placeholder-white/70 outline-none"
             />
           </div>
 
           {/* Password */}
-          <div>
+          <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3">
             <input
               type="password"
               name="password"
@@ -110,7 +108,7 @@ export default function SignUp() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="w-full bg-transparent text-white placeholder-white/70 outline-none"
             />
           </div>
 
@@ -118,24 +116,17 @@ export default function SignUp() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-green-700 hover:bg-green-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg transition"
+            className="mt-6 w-full rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-600 py-3 text-sm font-semibold tracking-wide text-white transition hover:from-emerald-500 hover:to-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 
         {/* Sign In Redirect */}
-        <p className="text-sm text-gray-600 text-center mt-4">
+        <p className="mt-6 text-center text-sm text-white/80">
           Already have an account?{" "}
-          <Link to="/signin" className="text-green-700 hover:underline">
+          <Link to="/signin" className="font-medium text-emerald-200 hover:underline">
             Sign In
-          </Link>
-        </p>
-
-        {/* Back to Home */}
-        <p className="text-sm text-gray-600 text-center mt-2">
-          <Link to="/" className="text-green-600 hover:underline">
-            ← Back to Home
           </Link>
         </p>
       </div>
