@@ -256,7 +256,7 @@ const Shop = () => {
   return (
     <div className="min-h-screen bg-[#0C7A60] px-4 py-10 md:px-8">
       <div className="mx-auto flex max-w-6xl flex-col overflow-hidden rounded-[36px] bg-white/10 shadow-2xl lg:flex-row">
-        <aside className="w-full bg-[#0C7A60] px-8 py-10 text-white lg:w-1/3">
+        <aside className="w-full bg-[#0C7A60] px-8 py-10 text-white lg:w-1/3 lg:sticky lg:top-10 lg:overflow-auto lg:pr-4">
           <header className="space-y-3">
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">Shop with purpose</h1>
             <p className="text-lg text-emerald-100">
@@ -264,15 +264,28 @@ const Shop = () => {
             </p>
           </header>
 
-          <div className="relative mt-10 overflow-hidden rounded-3xl border-4 border-[#B872D2]/70 bg-white">
-            <img
-              src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1100&q=80"
-              alt="Eco tote bag"
-              className="h-80 w-full object-cover"
-            />
-            <span className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#B872D2] text-lg font-semibold text-white shadow-lg">
-              B
-            </span>
+          <div className="mt-10 space-y-6">
+            <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border-4 border-[#B872D2]/70 bg-white">
+              <img
+                src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=700&q=80"
+                alt="Curated eco-friendly lifestyle display"
+                className="h-full w-full object-cover"
+              />
+              <span className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#B872D2] text-lg font-semibold text-white shadow-lg">
+                B
+              </span>
+            </div>
+
+            <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border-4 border-[#0C7A60]/30 bg-white">
+              <img
+                src="https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=700&q=80"
+                alt="Assortment of sustainable household goods"
+                className="h-full w-full object-cover"
+              />
+              <span className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-lg font-semibold text-[#0C7A60] shadow-lg">
+                Eco
+              </span>
+            </div>
           </div>
         </aside>
 
