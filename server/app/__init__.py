@@ -44,6 +44,14 @@ def create_app():
     app.register_blueprint(product_bp, url_prefix="/api/products")
     app.register_blueprint(insight_bp, url_prefix="/api/insights")
 
+    # Populate development database with sample data if empty
+    if app.config.get("DEBUG", False):
+        from .models import ensure_sample_data
+
+        with app.app_context():
+            db.create_all()
+            ensure_sample_data()
+
     # Simple health route
     @app.get("/api/health")
     def health():

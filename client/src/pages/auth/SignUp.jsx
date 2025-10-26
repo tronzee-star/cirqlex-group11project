@@ -8,39 +8,51 @@ export default function SignUp() {
     email: "",
     password: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+    };
+
+    if (!payload.name || !payload.email || !payload.password) {
+      setError("Please fill in all fields.");
+      return;
+    }
 
     try {
-      const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+      setIsSubmitting(true);
+      const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
       const response = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log("✅ Account created successfully:", data);
-        // Store token and user info
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        alert("Account created successfully! Welcome to CircularShop.");
-        navigate("/buyer-dashboard"); // redirect to dashboard
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/buyer-dashboard");
       } else {
-        alert(data.error || "Sign-up failed. Try again.");
+        setError(data.error || "Sign-up failed. Try again.");
       }
-    } catch (error) {
-      console.error("❌ Error signing up:", error);
-      alert("Server error. Please try again later.");
+    } catch (err) {
+      console.error("Error signing up:", err);
+      setError("Server error. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -50,6 +62,12 @@ export default function SignUp() {
         <h2 className="text-2xl font-semibold text-center text-green-800 mb-6">
           Create an Account
         </h2>
+
+        {error ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
@@ -98,9 +116,10 @@ export default function SignUp() {
           {/* Sign Up Button */}
           <button
             type="submit"
-            className="w-full bg-green-700 hover:bg-green-800 text-white font-medium py-2 rounded-lg transition"
+            disabled={isSubmitting}
+            className="w-full bg-green-700 hover:bg-green-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium py-2 rounded-lg transition"
           >
-            Sign Up
+            {isSubmitting ? "Creating account..." : "Sign Up"}
           </button>
         </form>
 

@@ -7,32 +7,46 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+
+    const payload = {
+      email: email.trim().toLowerCase(),
+      password,
+    };
+
+    if (!payload.email || !payload.password) {
+      setError("Please enter your email and password.");
+      return;
+    }
 
     try {
+      setIsSubmitting(true);
       const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
       const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Store token and user info
         localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        alert("Login successful!");
         navigate("/buyer-dashboard");
       } else {
-        alert(data.error || "Login failed. Please check your credentials.");
+        setError(data.error || "Login failed. Please try again.");
       }
-    } catch (error) {
-      console.error("❌ Error logging in:", error);
-      alert("Server error. Please try again later.");
+    } catch (err) {
+      console.error("Error logging in:", err);
+      setError("Server error. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -46,6 +60,12 @@ const LoginPage = () => {
         <p className="text-sm mb-6 opacity-80">
           Welcome back! Please login to your account
         </p>
+
+        {error ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        ) : null}
 
         <form onSubmit={handleLogin} className="space-y-4">
           {/* Username Field */}
@@ -90,9 +110,10 @@ const LoginPage = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full py-2 mt-4 text-white font-semibold rounded-lg bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 transition"
+            disabled={isSubmitting}
+            className="w-full py-2 mt-4 text-white font-semibold rounded-lg bg-gradient-to-r from-green-400 to-green-600 hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Login
+            {isSubmitting ? "Signing in..." : "Login"}
           </button>
         </form>
 
