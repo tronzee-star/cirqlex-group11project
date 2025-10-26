@@ -31,7 +31,7 @@ const SellerDashboard = () => {
   const sidebarLinks = [
     { label: "My listings", icon: FiGrid, to: "/seller-dashboard" },
     { label: "Switch to buy", icon: FiUsers, to: "/buyer-dashboard" },
-    { label: "Sell an item", icon: FiShoppingBag, to: "/seller-dashboard" },
+    { label: "Sell an item", icon: FiShoppingBag, to: "/sell" },
     { label: "Sales analytics", icon: FiBarChart2, to: null },
     { label: "Payouts", icon: FiDollarSign, to: null },
     { label: "Messages", icon: FiMessageSquare, to: null },
@@ -193,7 +193,7 @@ const SellerDashboard = () => {
               <div className="py-8 text-center text-sm text-gray-500">Loading your listings…</div>
             ) : listings.length === 0 ? (
               <div className="py-6 text-center text-sm text-gray-500">
-                No listings yet. Create one from the <Link to="/seller-dashboard" className="text-[#0C7A60] underline">sell</Link> tools.
+                No listings yet. Create one from the <Link to="/sell" className="text-[#0C7A60] underline">sell</Link> page.
               </div>
             ) : (
               <div className="overflow-x-auto">

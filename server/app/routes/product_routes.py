@@ -70,14 +70,34 @@ def get_product(product_id):
 
 
 @product_bp.route('/', methods=['POST'])
-@jwt_required()
 def create_product():
     """Create a new product listing."""
-    user_id = get_jwt_identity()
     data = request.get_json() or {}
 
     if not data.get('title'):
         return jsonify({'error': 'title is required'}), 400
+
+    # Try to get authenticated user, otherwise use demo user
+    try:
+        from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+        verify_jwt_in_request(optional=True)
+        user_id = get_jwt_identity()
+    except:
+        user_id = None
+    
+    # If no authenticated user, use or create demo user
+    if not user_id:
+        demo_user = User.query.filter_by(email='demo@cirqlex.com').first()
+        if not demo_user:
+            from .. import bcrypt
+            demo_user = User(
+                email='demo@cirqlex.com',
+                name='Demo User',
+                password_hash=bcrypt.generate_password_hash('demo123').decode('utf-8')
+            )
+            db.session.add(demo_user)
+            db.session.flush()
+        user_id = demo_user.id
 
     product = Product(
         title=data.get('title'),

@@ -5,13 +5,14 @@ import { useAuth } from "../../context/AuthContext.jsx";
 const guestLinks = [
   { label: "Home", to: "/" },
   { label: "About Us", to: "/about" },
+  { label: "Sell", to: "/sell" },
 ];
 
 const authLinks = [
   { label: "Home", to: "/" },
   { label: "About Us", to: "/about" },
   { label: "Buy", to: "/shop" },
-  { label: "Sell", to: "/seller-dashboard" },
+  { label: "Sell", to: "/sell" },
 ];
 
 export default function Navbar() {
