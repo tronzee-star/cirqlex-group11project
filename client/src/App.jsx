@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Navbar from "./components/shared/Navbar";
 import Footer from "./components/shared/Footer";
 import Home from './pages/Home';
@@ -8,28 +8,81 @@ import Shop from './pages/shop';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
+import { useAuth } from "./context/AuthContext.jsx";
+
+const PublicLayout = () => (
+  <div className="min-h-screen bg-white">
+    <Outlet />
+    <Footer />
+  </div>
+);
+
+const AppLayout = () => (
+  <div className="min-h-screen bg-white">
+    <Navbar />
+    <div className="pt-16">
+      <Outlet />
+    </div>
+    <Footer />
+  </div>
+);
+
+const ProtectedRoute = ({ redirectTo = "/signin", children }) => {
+  const { isAuthenticated, isReady } = useAuth();
+
+  if (!isReady) {
+    return null;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
     <Router>
-      <Navbar />
-      {/* add top padding so fixed navbar doesn't cover content */}
-      <div className="pt-16" bg white minn-h-screen>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
-          <Route path="/seller-dashboard" element={<SellerDashboard />} />
-          <Route path="/shop" element={<Shop />} />
-           <Route path="/about" element={<About />} />
+      <Routes>
+        <Route element={<PublicLayout />}>
           <Route path="/signin" element={<SignIn />} />
-<Route path="/signup" element={<SignUp />} />
+          <Route path="/signup" element={<SignUp />} />
+        </Route>
 
-        </Routes>
-      </div>
-      <Footer />
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route
+            path="/buyer-dashboard"
+            element={
+              <ProtectedRoute>
+                <BuyerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/seller-dashboard"
+            element={
+              <ProtectedRoute>
+                <SellerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shop"
+            element={
+              <ProtectedRoute>
+                <Shop />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Router>
   );
 }
 
 export default App;
-

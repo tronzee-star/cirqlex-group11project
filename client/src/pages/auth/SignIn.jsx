@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -36,8 +38,7 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        login(data.user, data.access_token);
         navigate("/buyer-dashboard");
       } else {
         setError(data.error || "Login failed. Please try again.");

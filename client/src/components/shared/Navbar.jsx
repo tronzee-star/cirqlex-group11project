@@ -1,43 +1,67 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/phase5-logo1.png";
+import { useAuth } from "../../context/AuthContext.jsx";
+
+const guestLinks = [
+  { label: "Home", to: "/" },
+  { label: "About Us", to: "/about" },
+];
+
+const authLinks = [
+  { label: "Home", to: "/" },
+  { label: "About Us", to: "/about" },
+  { label: "Buy", to: "/shop" },
+  { label: "Sell", to: "/seller-dashboard" },
+];
 
 export default function Navbar() {
-  return (
-    <nav className="fixed top-0 left-0 w-full bg-white/60 backdrop-blur-sm border-b border-gray-200 shadow-sm z-50">
+  const navigate = useNavigate();
+  const { isAuthenticated, logout, user } = useAuth();
 
-      <div className="max-w-7xl mx-auto flex items-center justify-between py-3 px-6">
-        
-        {/* Logo (clickable) */}
-        <Link to="/" className="flex items-center space-x-2">
-          <img
-            src={Logo}
-            alt="Cirqle X Logo"
-            className="w-10 h-10 object-contain"
-          />
+  const links = isAuthenticated ? authLinks : guestLinks;
+
+  const handleSignOut = () => {
+    logout();
+    navigate("/signin");
+  };
+
+  return (
+    <nav className="fixed top-0 left-0 w-full bg-white/70 backdrop-blur-sm border-b border-gray-200 shadow-sm z-50">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+        <Link to={isAuthenticated ? "/buyer-dashboard" : "/"} className="flex items-center space-x-2">
+          <img src={Logo} alt="Cirqle X Logo" className="h-10 w-10 object-contain" />
         </Link>
 
-        {/* Navigation Links */}
-        <ul className="flex items-center space-x-8 text-sm font-bold text-black-600">
-          <li><a href="#home" className="hover:text-black-400 transition">Home</a></li>
-          <li><Link to="/about">About Us</Link></li>
-          <li><a href="#buy" className="hover:text-green-600 transition">Buy</a></li>
-          <li><a href="#sell" className="hover:text-green-600 transition">Sell</a></li>
-          <li><a href="#sustainability" className="hover:text-green-600 transition">Sustainability</a></li>
+        <ul className="flex items-center space-x-8 text-sm font-semibold text-gray-700">
+          {links.map((item) => (
+            <li key={item.to}>
+              <Link to={item.to} className="transition hover:text-[#0C7A60]">
+                {item.label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
-        {/* Search + Sign In */}
-        <div className="flex items-center space-x-3">
-          <input
-            type="text"
-            placeholder="Search"
-            className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-200"
-          />
-          <Link
-            to="/signin"
-            className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-1.5 rounded-lg shadow-sm transition"
-          >
-            Sign In
-          </Link>
+        <div className="flex items-center gap-3">
+          {isAuthenticated ? (
+            <>
+              <span className="hidden text-sm text-gray-500 sm:inline">Hi, {user?.name?.split(" ")[0] || "Member"}</span>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="rounded-lg border border-[#0C7A60] px-4 py-1.5 text-sm font-medium text-[#0C7A60] transition hover:bg-[#0C7A60] hover:text-white"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/signin"
+              className="rounded-lg bg-[#0C7A60] px-4 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#095c48]"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,8 +44,7 @@ export default function SignUp() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("access_token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        login(data.user, data.access_token);
         navigate("/buyer-dashboard");
       } else {
         setError(data.error || "Sign-up failed. Try again.");
