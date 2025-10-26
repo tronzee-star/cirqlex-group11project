@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 
 const FALLBACK_IMAGE = 'https://via.placeholder.com/600x480?text=Image+Coming+Soon';
@@ -93,19 +94,9 @@ const filterGroups = [
     defaultOption: 'All',
   },
   {
-    label: 'Condition',
-    options: ['All', 'New', 'Refurbished', 'Pre-loved'],
-    defaultOption: 'All',
-  },
-  {
     label: 'Price',
     options: ['Any', 'Under ksh 1,000', 'ksh 1,000 - 5,000', 'Over ksh 5,000'],
     defaultOption: 'Any',
-  },
-  {
-    label: 'Location',
-    options: ['All', 'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru'],
-    defaultOption: 'All',
   },
 ];
 
@@ -113,13 +104,6 @@ const defaultFilterValues = filterGroups.reduce((acc, group) => {
   acc[group.label] = group.defaultOption;
   return acc;
 }, {});
-
-const heroCategories = [
-  { icon: '👜', label: 'Accessories' },
-  { icon: '👕', label: 'Clothing' },
-  { icon: '🏠', label: 'Home' },
-  { icon: '🌿', label: 'Eco living' },
-];
 
 const FilterDropdown = ({ label, options, value, onSelect }) => (
   <div className="relative group inline-block">
@@ -160,6 +144,7 @@ const Shop = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState(defaultFilterValues);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -216,12 +201,6 @@ const Shop = () => {
         const matchesCategory =
           filters.Category === 'All' || product.category === filters.Category;
 
-        const matchesCondition =
-          filters.Condition === 'All' || product.condition === filters.Condition;
-
-        const matchesLocation =
-          filters.Location === 'All' || product.location === filters.Location;
-
         const priceValue = product.priceValue ?? 0;
         let matchesPrice = true;
 
@@ -233,10 +212,14 @@ const Shop = () => {
           matchesPrice = priceValue > 5000;
         }
 
-        return matchesSearch && matchesCategory && matchesCondition && matchesLocation && matchesPrice;
+        return matchesSearch && matchesCategory && matchesPrice;
       }),
     [products, searchTerm, filters]
   );
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const handleFilterSelect = (label, value) => {
     setFilters((prev) => ({ ...prev, [label]: value }));
@@ -271,25 +254,21 @@ const Shop = () => {
               B
             </span>
           </div>
-
-          <section className="mt-10 space-y-4">
-            <h2 className="text-lg font-semibold">Shop by category</h2>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {heroCategories.map(({ icon, label }) => (
-                <div
-                  key={label}
-                  className="rounded-2xl bg-white/10 px-4 py-3 text-center font-medium text-white shadow-sm backdrop-blur transition hover:bg-white/20"
-                >
-                  <div className="text-xl">{icon}</div>
-                  <p className="mt-1 capitalize">{label}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </aside>
 
         <main className="flex-1 bg-white px-6 py-10 md:px-10">
           <div className="flex flex-col gap-6">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="flex w-fit items-center gap-2 rounded-full border border-[#0C7A60]/20 bg-[#E9F7F1] px-4 py-2 text-sm font-medium text-[#0C7A60] transition hover:border-[#0C7A60] hover:bg-[#D6F0E7]"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Back
+            </button>
+
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <h2 className="text-2xl font-semibold text-gray-800">All Products</h2>
               <div className="relative w-full max-w-md">
@@ -330,7 +309,7 @@ const Shop = () => {
             ) : null}
 
             {filteredProducts.length ? (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} {...product} />
                 ))}
