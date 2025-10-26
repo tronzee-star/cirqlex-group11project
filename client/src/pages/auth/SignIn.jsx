@@ -2,22 +2,36 @@ import React, { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:5001/api";
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    // Mock login logic
-    if (email === "test@example.com" && password === "password123") {
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.error || data.message || "Login failed");
+        return;
+      }
+      // store tokens and user
+      if (data.access_token) localStorage.setItem("access_token", data.access_token);
+      if (data.refresh_token) localStorage.setItem("refresh_token", data.refresh_token);
+      localStorage.setItem("current_user", JSON.stringify(data.user || {}));
       alert("Login successful!");
       navigate("/dashboard");
-    } else {
-      alert("No account found. Redirecting to signup...");
-      navigate("/signup");
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Network/server error. Please try again.");
     }
   };
 
