@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import BuyerDashboard from './pages/buyerDashboard';
 import SellerDashboard from './pages/sellerDashboard';
 import Shop from './pages/shop';
+import Sell from './pages/Sell';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
@@ -53,6 +54,7 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/sell" element={<Sell />} />
           <Route
             path="/buyer-dashboard"
             element={
