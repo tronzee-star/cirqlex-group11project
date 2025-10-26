@@ -107,63 +107,60 @@ const productSeed = [
   },
 ];
 
-const filterGroups = [
-  {
-    label: 'Category',
-    options: ['All', 'Home & Living', 'Furniture', 'Lifestyle', 'Clothing', 'Electronics', 'Footwear', 'Education'],
-    defaultOption: 'All',
-  },
-  {
-    label: 'Price',
-    options: ['Any', 'Under ksh 1,000', 'ksh 1,000 - 5,000', 'Over ksh 5,000'],
-    defaultOption: 'Any',
-  },
-];
 
-const defaultFilterValues = filterGroups.reduce((acc, group) => {
-  acc[group.label] = group.defaultOption;
-  return acc;
-}, {});
+const PRICE_FILTER_OPTIONS = ['Any', 'Under ksh 1,000', 'ksh 1,000 - 5,000', 'Over ksh 5,000'];
 
-const FilterDropdown = ({ label, options, value, onSelect }) => (
-  <div className="relative group inline-block">
-    <button
-      type="button"
-      className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-[#0C7A60]"
-    >
-      {value}
-      <svg className="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-    <div className="invisible absolute left-0 mt-2 w-48 rounded-2xl bg-white shadow-xl ring-1 ring-black/5 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
-      <ul className="py-2">
-        {options.map((option) => (
-          <li key={`${label}-${option}`}>
-            <button
-              type="button"
-              onClick={() => onSelect(label, option)}
-              className={`flex w-full px-4 py-2 text-left text-sm transition-colors ${
-                option === value
-                  ? 'bg-[#E9F7F1] text-[#0C7A60]'
-                  : 'text-gray-600 hover:bg-[#E9F7F1] hover:text-[#0C7A60]'
-              }`}
-            >
-              {option}
-            </button>
-          </li>
-        ))}
-      </ul>
+const DEFAULT_FILTERS = {
+  Category: 'All',
+  Condition: 'All',
+  Location: 'All',
+  Price: 'Any',
+};
+
+const FilterDropdown = ({ label, options, value, onSelect }) => {
+  const selectedValue = value ?? options[0];
+
+  return (
+    <div className="relative group inline-block">
+      <button
+        type="button"
+        className="flex items-center gap-2 rounded-full border border-[#0C7A60]/20 bg-[#E9F7F1] px-4 py-2 text-sm font-medium text-[#0C7A60] shadow-sm transition-colors hover:border-[#0C7A60] hover:bg-[#D6F0E7]"
+      >
+        <span className="font-semibold text-[#0A5E4A]">{label}:</span>
+        <span>{selectedValue}</span>
+        <svg className="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      <div className="invisible absolute left-0 mt-2 w-52 rounded-2xl bg-[#F4FBF8] shadow-xl ring-1 ring-[#0C7A60]/10 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
+        <ul className="py-2">
+          {options.map((option) => (
+            <li key={`${label}-${option}`}>
+              <button
+                type="button"
+                onClick={() => onSelect(label, option)}
+                className={`flex w-full px-4 py-2 text-left text-sm transition-colors ${
+                  option === selectedValue
+                    ? 'bg-white text-[#0C7A60]'
+                    : 'text-gray-600 hover:bg-white hover:text-[#0C7A60]'
+                }`}
+              >
+                {option}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState(defaultFilterValues);
+  const [filters, setFilters] = useState(() => ({ ...DEFAULT_FILTERS }));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -213,6 +210,51 @@ const Shop = () => {
     };
   }, []);
 
+  const { categories, conditions, locations } = useMemo(() => {
+    const source = products.length ? products : productSeed;
+    const unique = (values) => [...new Set(values.filter(Boolean))];
+
+    return {
+      categories: ['All', ...unique(source.map((item) => item.category))],
+      conditions: ['All', ...unique(source.map((item) => item.condition))],
+      locations: ['All', ...unique(source.map((item) => item.location))],
+    };
+  }, [products]);
+
+  const filterConfig = useMemo(
+    () => [
+      { label: 'Category', options: categories },
+      { label: 'Condition', options: conditions },
+      { label: 'Location', options: locations },
+      { label: 'Price', options: PRICE_FILTER_OPTIONS },
+    ],
+    [categories, conditions, locations]
+  );
+
+  useEffect(() => {
+    setFilters((prev) => {
+      const next = { ...prev };
+      let changed = false;
+
+      if (!categories.includes(prev.Category)) {
+        next.Category = 'All';
+        changed = true;
+      }
+
+      if (!conditions.includes(prev.Condition)) {
+        next.Condition = 'All';
+        changed = true;
+      }
+
+      if (!locations.includes(prev.Location)) {
+        next.Location = 'All';
+        changed = true;
+      }
+
+      return changed ? next : prev;
+    });
+  }, [categories, conditions, locations]);
+
   const filteredProducts = useMemo(
     () =>
       products.filter((product) => {
@@ -220,6 +262,12 @@ const Shop = () => {
 
         const matchesCategory =
           filters.Category === 'All' || product.category === filters.Category;
+
+        const matchesCondition =
+          filters.Condition === 'All' || product.condition === filters.Condition;
+
+        const matchesLocation =
+          filters.Location === 'All' || product.location === filters.Location;
 
         const priceValue = product.priceValue ?? 0;
         let matchesPrice = true;
@@ -232,7 +280,7 @@ const Shop = () => {
           matchesPrice = priceValue > 5000;
         }
 
-        return matchesSearch && matchesCategory && matchesPrice;
+        return matchesSearch && matchesCategory && matchesCondition && matchesLocation && matchesPrice;
       }),
     [products, searchTerm, filters]
   );
@@ -254,8 +302,8 @@ const Shop = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0C7A60] px-4 py-10 md:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col overflow-hidden rounded-[36px] bg-white/10 shadow-2xl lg:flex-row">
+    <div className="min-h-screen bg-[#0C7A60] px-4 py-10 md:px-10">
+      <div className="mx-auto flex max-w-7xl flex-col overflow-hidden rounded-[36px] bg-white/10 shadow-2xl lg:flex-row">
         <aside className="w-full bg-[#0C7A60] px-8 py-10 text-white lg:w-1/3 lg:sticky lg:top-10 lg:overflow-auto lg:pr-4">
           <header className="space-y-3">
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">Shop with purpose</h1>
@@ -324,7 +372,7 @@ const Shop = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              {filterGroups.map((group) => (
+              {filterConfig.map((group) => (
                 <FilterDropdown
                   key={group.label}
                   label={group.label}
