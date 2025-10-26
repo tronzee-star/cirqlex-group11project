@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
@@ -16,10 +17,12 @@ app.config.setdefault("JWT_SECRET_KEY", os.environ.get("JWT_SECRET_KEY", "jwt-se
 # Extensions
 CORS(app, resources={r"/api/*": {"origins": [
     "http://localhost:3000", "http://127.0.0.1:3000",
-    "http://localhost:5173", "http://127.0.0.1:5173"
+    "http://localhost:5173", "http://127.0.0.1:5173",
+    "http://localhost:5174", "http://127.0.0.1:5174"
 ]}}, supports_credentials=True)
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
+migrate = Migrate(app, db)
 
 
 class User(db.Model):
@@ -27,6 +30,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='customer')
     first_name = db.Column(db.String(80), nullable=True)
     last_name = db.Column(db.String(80), nullable=True)
 
@@ -41,6 +45,7 @@ class User(db.Model):
             "id": self.id,
             "username": self.username,
             "email": self.email,
+            "role": self.role,
             "first_name": self.first_name,
             "last_name": self.last_name,
         }
@@ -58,6 +63,23 @@ def validate_email(email: str) -> bool:
     return bool(re.match(r"[^@]+@[^@]+\.[^@]+", email))
 
 
+@app.route("/api/auth/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    """Refresh access token using a valid refresh token in Authorization header."""
+    identity = get_jwt_identity()
+    new_access = create_access_token(identity=identity)
+    return jsonify({"access_token": new_access}), 200
+
+
+@app.route("/api/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    """Example protected endpoint that returns current user id."""
+    current_user = get_jwt_identity()
+    return jsonify({"logged_in_as": current_user, "message": "You are viewing a protected resource"}), 200
+
+
 @app.route("/api/auth/register", methods=["POST"])
 def register():
     data = request.get_json(silent=True)
@@ -69,6 +91,7 @@ def register():
     password = data.get("password") or ""
     first_name = (data.get("first_name") or "").strip()
     last_name = (data.get("last_name") or "").strip()
+    role = (data.get("role") or "customer").strip().lower()
 
     if not username or not email or not password:
         return jsonify({"error": "username, email and password are required"}), 400
@@ -79,12 +102,15 @@ def register():
     if len(password) < 6:
         return jsonify({"error": "Password must be at least 6 characters"}), 400
 
+    if role not in ("customer", "vendor", "admin"):
+        return jsonify({"error": "Invalid role"}), 400
+
     if User.query.filter_by(username=username).first():
         return jsonify({"error": "Username already exists"}), 409
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email already exists"}), 409
 
-    user = User(username=username, email=email, first_name=first_name, last_name=last_name)
+    user = User(username=username, email=email, first_name=first_name, last_name=last_name, role=role)
     user.set_password(password)
     db.session.add(user)
     try:
