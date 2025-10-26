@@ -24,7 +24,7 @@ def signup():
     db.session.add(user)
     db.session.commit()
 
-    token = create_access_token(identity=user.id)
+    token = create_access_token(identity=str(user.id))
     return jsonify({
         'message': 'Account created successfully.',
         'user': user.to_dict(),
@@ -48,7 +48,7 @@ def login():
     if not bcrypt.check_password_hash(user.password_hash, password):
         return jsonify({'error': 'Incorrect password. Please try again.'}), 401
 
-    token = create_access_token(identity=user.id)
+    token = create_access_token(identity=str(user.id))
     return jsonify({
         'message': 'Login successful.',
         'user': user.to_dict(),
@@ -60,7 +60,7 @@ def login():
 @jwt_required()
 def get_current_user():
     user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user = User.query.get(int(user_id))
     if not user:
         return jsonify({'error': 'user not found'}), 404
     return jsonify({'user': user.to_dict()})

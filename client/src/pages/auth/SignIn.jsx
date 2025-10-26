@@ -126,6 +126,16 @@ const LoginPage = () => {
             Create one
           </button>
         </p>
+
+        <p className="mt-2 text-center text-sm text-white/60">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="font-medium text-emerald-100 hover:underline"
+          >
+            ← Back to Home
+          </button>
+        </p>
       </div>
     </section>
   );

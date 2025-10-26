@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .. import db
-from ..models import Product
+from ..models import Product, Order, User
 
 product_bp = Blueprint('products', __name__)
 
@@ -11,6 +11,55 @@ def get_products():
     """Get all products."""
     products = Product.query.order_by(Product.created_at.desc()).all()
     return jsonify({'items': [p.to_dict() for p in products]})
+
+
+@product_bp.route('/mine', methods=['GET'])
+@jwt_required()
+def get_my_products():
+    """Get listings created by current user."""
+    user_id = get_jwt_identity()
+    products = Product.query.filter_by(owner_id=user_id).order_by(Product.created_at.desc()).all()
+    return jsonify({'items': [p.to_dict() for p in products]})
+
+
+@product_bp.route('/stats', methods=['GET'])
+@jwt_required()
+def get_product_stats():
+    """Return aggregated stats for the current user."""
+    user_id = get_jwt_identity()
+
+    total_listings = Product.query.filter_by(owner_id=user_id).count()
+    total_sales_q = db.session.query(db.func.count(Order.id)).join(Product).filter(Product.owner_id == user_id)
+    total_sales = total_sales_q.scalar() or 0
+
+    revenue_q = (
+        db.session.query(db.func.coalesce(db.func.sum(Order.price), 0.0))
+        .join(Product)
+        .filter(Product.owner_id == user_id)
+    )
+    total_revenue = revenue_q.scalar() or 0.0
+
+    buyer_orders = Order.query.filter_by(buyer_id=user_id).order_by(Order.purchased_at.desc()).all()
+    purchases_count = len(buyer_orders)
+    purchases_total = sum(order.price for order in buyer_orders)
+
+    return jsonify({
+        'listings': total_listings,
+        'sales': total_sales,
+        'revenue': total_revenue,
+        'purchases_count': purchases_count,
+        'purchases_total': purchases_total,
+        'recent_orders': [order.to_dict(include_product=True) for order in buyer_orders],
+    })
+
+
+@product_bp.route('/orders', methods=['GET'])
+@jwt_required()
+def get_my_orders():
+    """Orders placed by the current user."""
+    user_id = get_jwt_identity()
+    orders = Order.query.filter_by(buyer_id=user_id).order_by(Order.purchased_at.desc()).all()
+    return jsonify({'items': [order.to_dict(include_product=True) for order in orders]})
 
 
 @product_bp.route('/<int:product_id>', methods=['GET'])

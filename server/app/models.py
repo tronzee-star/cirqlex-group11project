@@ -50,8 +50,52 @@ class Product(db.Model):
             'image_url': self.image_url,
             'is_donation': self.is_donation,
             'owner_id': self.owner_id,
+            'owner': self.owner.to_dict() if hasattr(self, "owner") and self.owner else None,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
+
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+
+    id = db.Column(db.Integer, primary_key=True)
+    buyer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    purchased_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    buyer = db.relationship('User', backref=db.backref('orders', lazy=True), foreign_keys=[buyer_id])
+    product = db.relationship('Product', backref=db.backref('orders', lazy=True))
+
+    def to_dict(self, include_product=False):
+        data = {
+            'id': self.id,
+            'buyer_id': self.buyer_id,
+            'product_id': self.product_id,
+            'price': self.price,
+            'purchased_at': self.purchased_at.isoformat() if self.purchased_at else None,
+        }
+
+        if include_product and self.product:
+            owner_data = None
+            if getattr(self.product, 'owner', None):
+                owner = self.product.owner
+                owner_data = {
+                    'id': owner.id,
+                    'name': owner.name,
+                    'email': owner.email,
+                }
+
+            data['product'] = {
+                'id': self.product.id,
+                'title': self.product.title,
+                'category': self.product.category,
+                'price': self.product.price,
+                'owner': owner_data,
+                'image_url': self.product.image_url,
+            }
+
+        return data
 
 
 # ---------------------------------------------------------------------------
@@ -89,59 +133,48 @@ SAMPLE_USERS = [
 
 SAMPLE_PRODUCTS = [
     {
-        "title": "Organic Cotton T-Shirt",
-        "description": "Pre-loved organic cotton t-shirt in excellent condition. Size M.",
-        "price": 2000.0,
-        "condition": "Used - Like New",
-        "category": "Clothing",
-        "location": "Nairobi",
-        "is_donation": False,
-        "owner_email": "alice@example.com",
-        "image_url": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-        "title": "Bamboo Toothbrush Set",
-        "description": "Eco-friendly bamboo toothbrushes, pack of 4. Never opened.",
-        "price": 200.0,
-        "condition": "New",
-        "category": "Home & Living",
-        "location": "Mombasa",
-        "is_donation": False,
-        "owner_email": "alice@example.com",
-        "image_url": "https://images.unsplash.com/photo-1601000938259-9ad9eedfcc60?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-        "title": "Reusable Coffee Cup",
-        "description": "Insulated stainless steel coffee cup with lid. Perfect for on-the-go.",
-        "price": 1000.0,
-        "condition": "Used - Good",
-        "category": "Accessories",
-        "location": "Nairobi",
-        "is_donation": False,
-        "owner_email": "bob@example.com",
-        "image_url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-        "title": "Recycled Polyester Jacket",
-        "description": "Warm winter jacket made from recycled materials. Size L.",
-        "price": 2500.0,
-        "condition": "Used - Like New",
-        "category": "Clothing",
-        "location": "Kisumu",
-        "is_donation": False,
-        "owner_email": "bob@example.com",
-        "image_url": "https://images.unsplash.com/photo-1525171254930-643fc658b64e?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-        "title": "Handwoven Sisal Basket",
-        "description": "Vibrant handwoven basket perfect for storage or decor.",
+        "title": "Handcrafted Clay Mug",
+        "description": "A kiln-fired clay mug with a reclaimed wood handle and matte glaze.",
         "price": 1800.0,
         "condition": "New",
         "category": "Home & Living",
         "location": "Nairobi",
         "is_donation": False,
-        "owner_email": "amina@cirqlex.com",
-        "image_url": "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=900&q=80",
+        "owner_email": "bonfasogaro@gmail.com",
+        "image_url": "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Reclaimed Teak Coffee Table",
+        "description": "Mid-century inspired table handcrafted from reclaimed teak offcuts.",
+        "price": 12500.0,
+        "condition": "Used - Like New",
+        "category": "Furniture",
+        "location": "Nairobi",
+        "is_donation": False,
+        "owner_email": "bonfasogaro@gmail.com",
+        "image_url": "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Zero-Waste Starter Kit",
+        "description": "Bundle with bamboo cutlery, reusable produce bags, and beeswax wraps.",
+        "price": 2800.0,
+        "condition": "New",
+        "category": "Lifestyle",
+        "location": "Nakuru",
+        "is_donation": False,
+        "owner_email": "bonfasogaro@gmail.com",
+        "image_url": "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Organic Cotton Tee",
+        "description": "GOTS-certified cotton crew neck in deep forest green.",
+        "price": 2200.0,
+        "condition": "Pre-loved",
+        "category": "Clothing",
+        "location": "Nairobi",
+        "is_donation": False,
+        "owner_email": "bonfasogaro@gmail.com",
+        "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Solar-Powered Lantern",
@@ -151,8 +184,41 @@ SAMPLE_PRODUCTS = [
         "category": "Electronics",
         "location": "Naivasha",
         "is_donation": False,
-        "owner_email": "daniel@cirqlex.com",
+        "owner_email": "bonfasogaro@gmail.com",
         "image_url": "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Vintage Rattan Chair",
+        "description": "Restored rattan lounge chair with new organic cotton cushions.",
+        "price": 5400.0,
+        "condition": "Used - Good",
+        "category": "Furniture",
+        "location": "Mombasa",
+        "is_donation": False,
+        "owner_email": "gloria@gmail.com",
+        "image_url": "https://images.unsplash.com/photo-1549187774-b4e9b0445b07?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Recycled Glass Planter Set",
+        "description": "Set of three planters blown from recycled glass bottles.",
+        "price": 1900.0,
+        "condition": "New",
+        "category": "Home & Living",
+        "location": "Kisumu",
+        "is_donation": False,
+        "owner_email": "gloria@gmail.com",
+        "image_url": "https://images.unsplash.com/photo-1484980972926-edee96e0960d?auto=format&fit=crop&w=900&q=80",
+    },
+    {
+        "title": "Handwoven Sisal Basket",
+        "description": "Vibrant handwoven basket perfect for storage or decor.",
+        "price": 2100.0,
+        "condition": "New",
+        "category": "Home & Living",
+        "location": "Nairobi",
+        "is_donation": False,
+        "owner_email": "lucy@cirqlex.com",
+        "image_url": "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Upcycled Denim Backpack",
@@ -162,19 +228,8 @@ SAMPLE_PRODUCTS = [
         "category": "Accessories",
         "location": "Eldoret",
         "is_donation": False,
-        "owner_email": "lucy@cirqlex.com",
-        "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-        "title": "Organic Soap Collection",
-        "description": "Set of six handmade soaps infused with essential oils.",
-        "price": 900.0,
-        "condition": "New",
-        "category": "Beauty",
-        "location": "Mombasa",
-        "is_donation": False,
         "owner_email": "gloria@gmail.com",
-        "image_url": "https://images.unsplash.com/photo-1512499617640-c2f999098c01?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Community Library Starter Pack",
@@ -186,6 +241,40 @@ SAMPLE_PRODUCTS = [
         "is_donation": True,
         "owner_email": "bonfasogaro@gmail.com",
         "image_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=900&q=80",
+    },
+]
+
+
+SAMPLE_ORDERS = [
+    {
+        "buyer_email": "bonfasogaro@gmail.com",
+        "product_title": "Vintage Rattan Chair",
+        "price": 5400.0,
+        "purchased_at": "2024-07-20",
+    },
+    {
+        "buyer_email": "bonfasogaro@gmail.com",
+        "product_title": "Recycled Glass Planter Set",
+        "price": 1900.0,
+        "purchased_at": "2024-07-15",
+    },
+    {
+        "buyer_email": "bonfasogaro@gmail.com",
+        "product_title": "Handwoven Sisal Basket",
+        "price": 2100.0,
+        "purchased_at": "2024-07-10",
+    },
+    {
+        "buyer_email": "gloria@gmail.com",
+        "product_title": "Handcrafted Clay Mug",
+        "price": 1800.0,
+        "purchased_at": "2024-07-08",
+    },
+    {
+        "buyer_email": "gloria@gmail.com",
+        "product_title": "Zero-Waste Starter Kit",
+        "price": 2800.0,
+        "purchased_at": "2024-07-05",
     },
 ]
 
@@ -207,6 +296,7 @@ def ensure_sample_data():
 
     db.session.flush()
 
+    title_to_product = {}
     for sample in SAMPLE_PRODUCTS:
         owner = email_to_user.get(sample["owner_email"])
         if not owner:
@@ -223,5 +313,25 @@ def ensure_sample_data():
             owner_id=owner.id,
         )
         db.session.add(product)
+        db.session.flush()
+        title_to_product[product.title] = product
+
+    for sample in SAMPLE_ORDERS:
+        buyer = email_to_user.get(sample["buyer_email"])
+        product = title_to_product.get(sample["product_title"])
+        if not buyer or not product:
+            continue
+
+        purchased_at = sample.get("purchased_at")
+        if isinstance(purchased_at, str):
+            purchased_at = datetime.fromisoformat(purchased_at)
+
+        order = Order(
+            buyer_id=buyer.id,
+            product_id=product.id,
+            price=sample.get("price", product.price),
+            purchased_at=purchased_at,
+        )
+        db.session.add(order)
 
     db.session.commit()
