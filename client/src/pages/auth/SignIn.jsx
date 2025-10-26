@@ -8,16 +8,31 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Mock login logic
-    if (email === "test@example.com" && password === "password123") {
-      alert("Login successful!");
-      navigate("/dashboard");
-    } else {
-      alert("No account found. Redirecting to signup...");
-      navigate("/signup");
+    try {
+      const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token and user info
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        alert("Login successful!");
+        navigate("/buyer-dashboard");
+      } else {
+        alert(data.error || "Login failed. Please check your credentials.");
+      }
+    } catch (error) {
+      console.error("❌ Error logging in:", error);
+      alert("Server error. Please try again later.");
     }
   };
 

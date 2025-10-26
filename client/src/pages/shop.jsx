@@ -1,45 +1,34 @@
-import React from 'react';
-import ProductCard from '../components/ProductCard';
+import React, { useEffect, useState } from 'react';
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
 
 const Shop = () => {
-  const products = [
-    {
-      id: 1,
-      name: 'Organic cotton T-shirt',
-      price: '2,000',
-      image: '' // You'll add the image path
-    },
-    {
-      id: 2,
-      name: 'Bamboo toothbrush set',
-      price: '200',
-      image: '' // You'll add the image path
-    },
-    {
-      id: 3,
-      name: 'reusable coffee cup',
-      price: '1,000',
-      image: '' // You'll add the image path
-    },
-    {
-      id: 4,
-      name: 'Recycled polyester jacket',
-      price: '2,500',
-      image: '' // You'll add the image path
-    },
-    {
-      id: 5,
-      name: 'eco-friendly candles',
-      price: '700',
-      image: '' // You'll add the image path
-    },
-    {
-      id: 6,
-      name: 'upcycled furniture',
-      price: '5,000',
-      image: '' // You'll add the image path
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    let ignore = false;
+    async function load() {
+      try {
+        const res = await fetch(`${API_BASE}/products/`);
+        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+        const data = await res.json();
+        if (!ignore) setItems(data.items || []);
+      } catch (e) {
+        if (!ignore) setError(String(e));
+      } finally {
+        if (!ignore) setLoading(false);
+      }
     }
-  ];
+    load();
+    return () => { ignore = true };
+  }, []);
+
+  const filteredItems = items.filter(item => 
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-teal-700">

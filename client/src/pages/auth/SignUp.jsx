@@ -19,7 +19,8 @@ export default function SignUp() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+      const response = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -29,10 +30,13 @@ export default function SignUp() {
 
       if (response.ok) {
         console.log("✅ Account created successfully:", data);
-        alert("Account created successfully! Please sign in.");
-        navigate("/signin"); // redirect to sign-in page
+        // Store token and user info
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        alert("Account created successfully! Welcome to CircularShop.");
+        navigate("/buyer-dashboard"); // redirect to dashboard
       } else {
-        alert(data.message || "Sign-up failed. Try again.");
+        alert(data.error || "Sign-up failed. Try again.");
       }
     } catch (error) {
       console.error("❌ Error signing up:", error);
