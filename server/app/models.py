@@ -141,7 +141,7 @@ SAMPLE_PRODUCTS = [
         "location": "Nairobi",
         "is_donation": False,
         "owner_email": "bonfasogaro@gmail.com",
-        "image_url": "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Reclaimed Teak Coffee Table",
@@ -174,7 +174,7 @@ SAMPLE_PRODUCTS = [
         "location": "Nairobi",
         "is_donation": False,
         "owner_email": "bonfasogaro@gmail.com",
-        "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Solar-Powered Lantern",
@@ -185,7 +185,7 @@ SAMPLE_PRODUCTS = [
         "location": "Naivasha",
         "is_donation": False,
         "owner_email": "bonfasogaro@gmail.com",
-        "image_url": "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Vintage Rattan Chair",
@@ -196,7 +196,7 @@ SAMPLE_PRODUCTS = [
         "location": "Mombasa",
         "is_donation": False,
         "owner_email": "gloria@gmail.com",
-        "image_url": "https://images.unsplash.com/photo-1549187774-b4e9b0445b07?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Recycled Glass Planter Set",
@@ -207,7 +207,7 @@ SAMPLE_PRODUCTS = [
         "location": "Kisumu",
         "is_donation": False,
         "owner_email": "gloria@gmail.com",
-        "image_url": "https://images.unsplash.com/photo-1484980972926-edee96e0960d?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Handwoven Sisal Basket",
@@ -218,18 +218,18 @@ SAMPLE_PRODUCTS = [
         "location": "Nairobi",
         "is_donation": False,
         "owner_email": "lucy@cirqlex.com",
-        "image_url": "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=900&q=80",
     },
     {
-        "title": "Upcycled Denim Backpack",
-        "description": "Stylish backpack made from reclaimed denim and leather accents.",
+        "title": "Upcycled Denim Sneakers",
+        "description": "Casual sneakers crafted from reclaimed denim with natural rubber soles.",
         "price": 2600.0,
         "condition": "Pre-loved",
-        "category": "Accessories",
+        "category": "Footwear",
         "location": "Eldoret",
         "is_donation": False,
         "owner_email": "gloria@gmail.com",
-        "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
+        "image_url": "https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&w=900&q=80",
     },
     {
         "title": "Community Library Starter Pack",
