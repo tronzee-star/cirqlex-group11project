@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const FALLBACK_IMAGE = 'https://via.placeholder.com/600x480?text=Image+Coming+Soon';
 
@@ -14,6 +15,7 @@ const productSeed = [
     category: 'Home & Living',
     condition: 'New',
     location: 'Nairobi',
+    ownerId: null,
   },
   {
     id: 2,
@@ -24,6 +26,7 @@ const productSeed = [
     category: 'Furniture',
     condition: 'Used - Like New',
     location: 'Nairobi',
+    ownerId: null,
   },
   {
     id: 3,
@@ -34,6 +37,7 @@ const productSeed = [
     category: 'Lifestyle',
     condition: 'New',
     location: 'Nakuru',
+    ownerId: null,
   },
   {
     id: 4,
@@ -44,6 +48,7 @@ const productSeed = [
     category: 'Clothing',
     condition: 'Pre-loved',
     location: 'Nairobi',
+    ownerId: null,
   },
   {
     id: 5,
@@ -54,6 +59,7 @@ const productSeed = [
     category: 'Electronics',
     condition: 'New',
     location: 'Naivasha',
+    ownerId: null,
   },
   {
     id: 6,
@@ -64,6 +70,7 @@ const productSeed = [
     category: 'Furniture',
     condition: 'Used - Good',
     location: 'Mombasa',
+    ownerId: null,
   },
   {
     id: 7,
@@ -74,6 +81,7 @@ const productSeed = [
     category: 'Home & Living',
     condition: 'New',
     location: 'Kisumu',
+    ownerId: null,
   },
   {
     id: 8,
@@ -94,6 +102,7 @@ const productSeed = [
     category: 'Footwear',
     condition: 'Pre-loved',
     location: 'Eldoret',
+    ownerId: null,
   },
   {
     id: 10,
@@ -104,6 +113,7 @@ const productSeed = [
     category: 'Education',
     condition: 'Used',
     location: 'Kisii',
+    ownerId: null,
   },
 ];
 
@@ -124,15 +134,15 @@ const FilterDropdown = ({ label, options, value, onSelect }) => {
     <div className="relative group inline-block">
       <button
         type="button"
-        className="flex items-center gap-2 rounded-full border border-[#0C7A60]/20 bg-[#E9F7F1] px-4 py-2 text-sm font-medium text-[#0C7A60] shadow-sm transition-colors hover:border-[#0C7A60] hover:bg-[#D6F0E7]"
+        className="flex items-center gap-2 rounded-full border border-white/30 bg-[#0C7A60] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:border-white/60 hover:bg-[#095c48]"
       >
-        <span className="font-semibold text-[#0A5E4A]">{label}:</span>
-        <span>{selectedValue}</span>
-        <svg className="h-4 w-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <span className="font-semibold text-white/90">{label}:</span>
+        <span className="text-white">{selectedValue}</span>
+        <svg className="h-4 w-4 text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      <div className="invisible absolute left-0 mt-2 w-52 rounded-2xl bg-[#F4FBF8] shadow-xl ring-1 ring-[#0C7A60]/10 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
+      <div className="invisible absolute left-0 mt-2 w-52 rounded-2xl bg-[#0C7A60] shadow-xl ring-1 ring-white/20 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
         <ul className="py-2">
           {options.map((option) => (
             <li key={`${label}-${option}`}>
@@ -141,8 +151,8 @@ const FilterDropdown = ({ label, options, value, onSelect }) => {
                 onClick={() => onSelect(label, option)}
                 className={`flex w-full px-4 py-2 text-left text-sm transition-colors ${
                   option === selectedValue
-                    ? 'bg-white text-[#0C7A60]'
-                    : 'text-gray-600 hover:bg-white hover:text-[#0C7A60]'
+                    ? 'bg-white/15 text-white'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 {option}
@@ -162,6 +172,7 @@ const Shop = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState(() => ({ ...DEFAULT_FILTERS }));
   const navigate = useNavigate();
+  const { token, user } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -187,6 +198,7 @@ const Shop = () => {
           condition: item.condition || 'New',
           location: item.location || 'N/A',
           image: item.image_url || FALLBACK_IMAGE,
+          ownerId: item.owner_id,
         }));
 
         if (isMounted) {
@@ -197,7 +209,12 @@ const Shop = () => {
         console.error('Error fetching products:', err);
         if (isMounted) {
           setError('Failed to load products. Showing sample items.');
-          setProducts(productSeed);
+          setProducts(
+            productSeed.map((item) => ({
+              ...item,
+              ownerId: null,
+            }))
+          );
           setLoading(false);
         }
       }
@@ -287,6 +304,35 @@ const Shop = () => {
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const handleDelete = async (productId) => {
+    if (!token) {
+      alert('Please sign in to delete your listing.');
+      return;
+    }
+
+    const confirmDelete = window.confirm('Are you sure you want to delete this listing?');
+    if (!confirmDelete) return;
+
+    try {
+      const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+      const response = await fetch(`${API_BASE}/products/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete product');
+      }
+
+      setProducts((prev) => prev.filter((product) => product.id !== productId));
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      alert('Could not delete the listing. Please try again.');
+    }
   };
 
   const handleFilterSelect = (label, value) => {
@@ -392,7 +438,12 @@ const Shop = () => {
             {filteredProducts.length ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} {...product} />
+                  <ProductCard
+                    key={product.id}
+                    {...product}
+                    isOwn={Boolean(user && product.ownerId && user.id === product.ownerId)}
+                    onDelete={() => handleDelete(product.id)}
+                  />
                 ))}
               </div>
             ) : (
