@@ -31,7 +31,7 @@ const BuyerDashboard = () => {
     { label: "My Orders report", icon: FiList, to: "/buyer-dashboard" },
     { label: "Switch to sell", icon: FiRefreshCw, to: "/seller-dashboard" },
     { label: "Shop", icon: FiShoppingBag, to: "/shop" },
-    { label: "Go to cart", icon: FiShoppingCart, to: null },
+    { label: "Go to cart", icon: FiShoppingCart, to: "/cart" },
     { label: "Sustainability Impact", icon: FiTrendingUp, to: null },
     { label: "Chat with AI", icon: FiMessageCircle, to: null },
   ];
