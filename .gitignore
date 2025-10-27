@@ -141,3 +141,11 @@ vite.config.ts.timestamp-*
 # Flask backend SQLite databases
 server/instance/app.db
 server/instance/*.db
+
+# Python bytecode
+**/__pycache__/
+*.py[cod]
+
+# Python virtual environments
+venv/
+server/venv/

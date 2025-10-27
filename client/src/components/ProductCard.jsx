@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ProductCard = ({ image, name, price }) => {
+const ProductCard = ({ image, name, price, isOwn = false, onDelete }) => {
   const [imgSrc, setImgSrc] = useState(image);
   const fallbackImage = 'https://via.placeholder.com/400x320?text=Image+Unavailable';
 
@@ -24,6 +24,15 @@ const ProductCard = ({ image, name, price }) => {
         <button className="inline-flex items-center justify-center w-full rounded-full bg-[#00A651] px-4 py-2 text-sm font-semibold text-white hover:bg-[#009245] transition-colors">
           Add to Cart
         </button>
+        {isOwn && onDelete ? (
+          <button
+            type="button"
+            onClick={onDelete}
+            className="inline-flex items-center justify-center w-full rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:border-red-300 hover:bg-red-100"
+          >
+            Delete Listing
+          </button>
+        ) : null}
       </div>
     </div>
   );
