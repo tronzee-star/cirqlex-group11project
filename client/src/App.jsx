@@ -7,6 +7,7 @@ import BuyerDashboard from './pages/buyerDashboard';
 import SellerDashboard from './pages/sellerDashboard';
 import Shop from './pages/shop';
 import Sell from './pages/Sell';
+import Cart from './pages/cart';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
@@ -84,6 +85,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Shop />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoute>
+            <Cart />
           </ProtectedRoute>
         }
       />
