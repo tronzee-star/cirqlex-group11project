@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext.jsx';
+import { useCart } from "../context/CardContext.jsx";
 
 const currencyFormatter = new Intl.NumberFormat('en-KE', {
   style: 'currency',
