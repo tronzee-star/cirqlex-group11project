@@ -394,7 +394,7 @@ const Shop = () => {
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex w-fit items-center gap-2 rounded-full border border-[#0C7A60]/20 bg-[#E9F7F1] px-4 py-2 text-sm font-medium text-[#0C7A60] transition hover:border-[#0C7A60] hover:bg-[#D6F0E7]"
+                className="flex w-fit items-center gap-2 rounded-full border border-[#0C7A60] bg-[#0C7A60] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#095c48]"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
