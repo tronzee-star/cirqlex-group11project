@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 // Placeholder image for the left side
 const PRODUCT_DISPLAY_IMAGE = 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80';
 
 export default function Sell() {
+  const { token, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -29,6 +31,10 @@ export default function Sell() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated || !token) {
+      setError('Please sign in to list a product.');
+      return;
+    }
     setIsSubmitting(true);
     setError('');
 
@@ -50,6 +56,7 @@ export default function Sell() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(productData),
       });
