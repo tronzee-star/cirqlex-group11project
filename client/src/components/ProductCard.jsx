@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useCart } from '../context/CardContext.jsx';
 
-const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDelete }) => {
+const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDelete, onAddToCart }) => {
   const [imgSrc, setImgSrc] = useState(image);
   const { addItem } = useCart();
   const fallbackImage = 'https://via.placeholder.com/400x320?text=Image+Unavailable';
@@ -20,6 +20,9 @@ const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDele
     })();
 
     addItem({ id, name, image, priceValue: numericPrice, quantity: 1 });
+    if (typeof onAddToCart === 'function') {
+      onAddToCart();
+    }
   };
 
   const formattedPrice = useMemo(() => {

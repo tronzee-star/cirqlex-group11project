@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -171,8 +171,10 @@ const Shop = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState(() => ({ ...DEFAULT_FILTERS }));
+  const [cartMessage, setCartMessage] = useState(null);
   const navigate = useNavigate();
   const { token, user } = useAuth();
+  const notificationTimeoutRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -303,8 +305,42 @@ const Shop = () => {
   );
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/buyer-dashboard');
   };
+
+  const showCartNotification = () => {
+    setCartMessage('Added to cart');
+
+    if (notificationTimeoutRef.current) {
+      clearTimeout(notificationTimeoutRef.current);
+    }
+
+    notificationTimeoutRef.current = setTimeout(() => {
+      setCartMessage(null);
+      notificationTimeoutRef.current = null;
+    }, 2400);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (notificationTimeoutRef.current) {
+        clearTimeout(notificationTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!cartMessage) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [cartMessage]);
 
   const handleDelete = async (productId) => {
     if (!token) {
@@ -348,7 +384,14 @@ const Shop = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0C7A60] px-4 py-10 md:px-10">
+    <div className="relative min-h-screen bg-[#0C7A60] px-4 py-10 md:px-10">
+      {cartMessage ? (
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center" aria-live="polite">
+          <div className="pointer-events-auto w-full max-w-2xl rounded-xl border-2 border-white/60 bg-[#0C7A60] px-14 py-10 text-center text-2xl font-semibold text-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.45)]">
+            {cartMessage}
+          </div>
+        </div>
+      ) : null}
       <div className="mx-auto flex max-w-7xl flex-col overflow-hidden rounded-[36px] bg-white/10 shadow-2xl lg:flex-row">
         <aside className="w-full bg-[#0C7A60] px-8 py-10 text-white lg:w-1/3 lg:sticky lg:top-10 lg:overflow-auto lg:pr-4">
           <header className="space-y-3">
@@ -443,6 +486,7 @@ const Shop = () => {
                     {...product}
                     isOwn={Boolean(user && product.ownerId && user.id === product.ownerId)}
                     onDelete={() => handleDelete(product.id)}
+                    onAddToCart={showCartNotification}
                   />
                 ))}
               </div>
