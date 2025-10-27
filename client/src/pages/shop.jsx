@@ -306,9 +306,14 @@ const Shop = () => {
     navigate(-1);
   };
 
-  const handleDelete = async (productId) => {
+  const handleDelete = async (productId, ownerId) => {
     if (!token) {
       alert('Please sign in to delete your listing.');
+      return;
+    }
+
+    if (!user || ownerId !== user.id) {
+      alert('You can only delete listings you created.');
       return;
     }
 
@@ -446,14 +451,18 @@ const Shop = () => {
 
             {filteredProducts.length ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    {...product}
-                    isOwn={Boolean(user && product.ownerId && user.id === product.ownerId)}
-                    onDelete={() => handleDelete(product.id)}
-                  />
-                ))}
+                {filteredProducts.map((product) => {
+                  const isOwnListing = Boolean(user && product.ownerId && user.id === product.ownerId);
+
+                  return (
+                    <ProductCard
+                      key={product.id}
+                      {...product}
+                      isOwn={isOwnListing}
+                      onDelete={isOwnListing ? () => handleDelete(product.id, product.ownerId) : undefined}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <p className="rounded-2xl bg-[#F5F5F5] px-6 py-10 text-center text-gray-500">
