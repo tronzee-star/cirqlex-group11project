@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useCart } from '../context/CardContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const currencyFormatter = new Intl.NumberFormat('en-KE', {
   style: 'currency',
@@ -22,6 +23,9 @@ const CheckoutReceipt = () => {
   const receiptData = location.state;
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { clearCart } = useCart();
+  const { token } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     if (!receiptData) {
@@ -48,6 +52,66 @@ const CheckoutReceipt = () => {
   const total = currencyFormatter.format(totals.total || 0);
   const generatedAtLabel = formatDate(generatedAt || new Date().toISOString());
   const totalPlain = `ksh ${Math.round(totals.total || 0).toLocaleString()}`;
+
+  const handleConfirmPayment = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    if (!items.length) {
+      setSubmitError('No items available to confirm.');
+      return;
+    }
+
+    if (!token) {
+      setSubmitError('Please sign in again to confirm your payment.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+    const payload = {
+      items: items.map((item) => ({
+        product_id: item.id,
+        quantity: item.quantity,
+        price_value: item.priceValue,
+      })),
+    };
+
+    try {
+      const response = await fetch(`${API_BASE}/products/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        let message = 'Failed to confirm payment. Please try again.';
+        try {
+          const errorData = await response.json();
+          if (errorData?.error) {
+            message = errorData.error;
+          }
+        } catch (err) {
+          // ignore
+        }
+        throw new Error(message);
+      }
+
+      clearCart();
+      setShowConfirmation(true);
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      setSubmitError(error.message || 'Unable to confirm payment.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className="min-h-screen bg-[#0C7A60]/20 py-16">
@@ -137,16 +201,19 @@ const CheckoutReceipt = () => {
               >
                 ← Back to Cart
               </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowConfirmation(true);
-                  clearCart();
-                }}
-                className="inline-flex items-center justify-center rounded-full bg-[#00A651] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245]"
-              >
-                Confirm Payment
-              </button>
+              <div className="flex flex-col items-end gap-2 sm:items-start">
+                {submitError ? (
+                  <p className="text-xs font-semibold text-red-500">{submitError}</p>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleConfirmPayment}
+                  disabled={isSubmitting}
+                  className="inline-flex items-center justify-center rounded-full bg-[#00A651] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245] disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isSubmitting ? 'Processing…' : 'Confirm Payment'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
