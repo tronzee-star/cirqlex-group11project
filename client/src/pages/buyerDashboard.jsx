@@ -31,7 +31,7 @@ const BuyerDashboard = () => {
     { label: "My Orders report", icon: FiList, to: "/buyer-dashboard" },
     { label: "Switch to sell", icon: FiRefreshCw, to: "/seller-dashboard" },
     { label: "Shop", icon: FiShoppingBag, to: "/shop" },
-    { label: "Go to cart", icon: FiShoppingCart, to: null },
+    { label: "Go to cart", icon: FiShoppingCart, to: "/cart" },
     { label: "Sustainability Impact", icon: FiTrendingUp, to: null },
     { label: "Chat with AI", icon: FiMessageCircle, to: null },
   ];
@@ -159,7 +159,19 @@ const BuyerDashboard = () => {
             </div>
           ) : null}
 
-          <section className="mb-8 grid gap-4 sm:grid-cols-3">
+          <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-5 text-center">
+              <h3 className="text-sm font-medium text-emerald-700">Active Listings</h3>
+              <p className="mt-2 text-3xl font-semibold text-emerald-900">
+                {stats.listings || 0}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-5 text-center">
+              <h3 className="text-sm font-medium text-emerald-700">Total Revenue</h3>
+              <p className="mt-2 text-3xl font-semibold text-emerald-900">
+                {formatCurrency(stats.revenue)}
+              </p>
+            </div>
             <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-5 text-center">
               <h3 className="text-sm font-medium text-emerald-700">Items Purchased</h3>
               <p className="mt-2 text-3xl font-semibold text-emerald-900">
@@ -170,12 +182,6 @@ const BuyerDashboard = () => {
               <h3 className="text-sm font-medium text-emerald-700">Total Spent</h3>
               <p className="mt-2 text-3xl font-semibold text-emerald-900">
                 {formatCurrency(stats.purchases_total)}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-5 text-center">
-              <h3 className="text-sm font-medium text-emerald-700">Orders</h3>
-              <p className="mt-2 text-3xl font-semibold text-emerald-900">
-                {stats.purchases_count || 0}
               </p>
             </div>
           </section>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -117,6 +117,22 @@ const productSeed = [
   },
 ];
 
+const mapApiProductToClient = (item) => {
+  const rawPrice = item?.price;
+  const priceValue = typeof rawPrice === 'number' ? rawPrice : Number(rawPrice) || 0;
+
+  return {
+    id: item?.id,
+    name: item?.title ?? 'Untitled product',
+    price: priceValue.toLocaleString(),
+    priceValue,
+    category: item?.category || 'Misc',
+    condition: item?.condition || 'New',
+    location: item?.location || 'N/A',
+    image: item?.image_url || FALLBACK_IMAGE,
+    ownerId: item?.owner_id,
+  };
+};
 
 const PRICE_FILTER_OPTIONS = ['Any', 'Under ksh 1,000', 'ksh 1,000 - 5,000', 'Over ksh 5,000'];
 
@@ -171,6 +187,20 @@ const Shop = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState(() => ({ ...DEFAULT_FILTERS }));
+  const [cartNotification, setCartNotification] = useState(false);
+  const notificationTimerRef = useRef(null);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [editError, setEditError] = useState('');
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    price: '',
+    category: 'Misc',
+    condition: 'New',
+    location: '',
+    image_url: '',
+  });
   const navigate = useNavigate();
   const { token, user } = useAuth();
 
@@ -189,17 +219,11 @@ const Shop = () => {
         const data = await response.json();
         const items = Array.isArray(data?.items) ? data.items : [];
 
-        const transformed = items.map((item) => ({
-          id: item.id,
-          name: item.title ?? 'Untitled product',
-          price: item.price ? item.price.toLocaleString() : '0',
-          priceValue: typeof item.price === 'number' ? item.price : Number(item.price) || 0,
-          category: item.category || 'Misc',
-          condition: item.condition || 'New',
-          location: item.location || 'N/A',
-          image: item.image_url || FALLBACK_IMAGE,
-          ownerId: item.owner_id,
-        }));
+        const transformed = items.map((item) => {
+          const normalized = mapApiProductToClient(item);
+          normalized.description = item?.description ?? '';
+          return normalized;
+        });
 
         if (isMounted) {
           setProducts(transformed.length ? transformed : productSeed);
@@ -303,12 +327,139 @@ const Shop = () => {
   );
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/buyer-dashboard');
   };
 
-  const handleDelete = async (productId) => {
+  const hideCartNotification = () => {
+    setCartNotification(false);
+    if (notificationTimerRef.current) {
+      clearTimeout(notificationTimerRef.current);
+      notificationTimerRef.current = null;
+    }
+  };
+
+  const showCartNotification = () => {
+    if (notificationTimerRef.current) {
+      clearTimeout(notificationTimerRef.current);
+    }
+    setCartNotification(true);
+    notificationTimerRef.current = setTimeout(() => {
+      setCartNotification(false);
+      notificationTimerRef.current = null;
+    }, 2200);
+  };
+
+  useEffect(() => {
+    const shouldLockScroll = cartNotification || Boolean(editingProduct);
+    document.body.style.overflow = shouldLockScroll ? 'hidden' : '';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [cartNotification, editingProduct]);
+
+  useEffect(() => () => {
+    if (notificationTimerRef.current) {
+      clearTimeout(notificationTimerRef.current);
+    }
+  }, []);
+
+  const startEditingProduct = (product) => {
+    if (!product) return;
+    setEditError('');
+    setEditForm({
+      title: product.name ?? '',
+      description: product.description ?? '',
+      price: product.priceValue != null ? String(product.priceValue) : '',
+      category: product.category ?? 'Misc',
+      condition: product.condition ?? 'New',
+      location: product.location ?? '',
+      image_url: product.image ?? '',
+    });
+    setEditingProduct(product);
+  };
+
+  const closeEditModal = () => {
+    setEditingProduct(null);
+    setEditError('');
+    setIsSavingEdit(false);
+  };
+
+  const handleEditFieldChange = (field, value) => {
+    setEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditSubmit = async (event) => {
+    event.preventDefault();
+    if (!editingProduct) return;
+
+    if (!token) {
+      setEditError('Please sign in to edit your listing.');
+      return;
+    }
+
+    setIsSavingEdit(true);
+    setEditError('');
+
+    const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+
+    const payload = {
+      title: editForm.title,
+      description: editForm.description,
+      price: Number(editForm.price) || 0,
+      category: editForm.category,
+      condition: editForm.condition,
+      location: editForm.location,
+      image_url: editForm.image_url,
+    };
+
+    try {
+      const response = await fetch(`${API_BASE}/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update product');
+      }
+
+      const updated = await response.json();
+      const normalized = mapApiProductToClient(updated);
+      normalized.description = updated?.description ?? '';
+
+      setProducts((prev) =>
+        prev.map((item) =>
+          item.id === normalized.id
+            ? {
+                ...item,
+                ...normalized,
+                description: normalized.description ?? updated?.description ?? '',
+              }
+            : item
+        )
+      );
+
+      closeEditModal();
+    } catch (err) {
+      console.error('Error updating product:', err);
+      setEditError('Could not update the listing. Please try again.');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
+  const handleDelete = async (productId, ownerId) => {
     if (!token) {
       alert('Please sign in to delete your listing.');
+      return;
+    }
+
+    if (!user || ownerId !== user.id) {
+      alert('You can only delete listings you created.');
       return;
     }
 
@@ -349,6 +500,26 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-[#0C7A60] px-4 py-10 md:px-10">
+      {cartNotification ? (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm rounded-3xl border border-white/30 bg-white px-8 py-10 text-center shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#0C7A60]/10 text-[#0C7A60]">
+              <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </div>
+            <h2 className="mt-5 text-xl font-semibold text-[#0C7A60]">Added to Cart</h2>
+            <p className="mt-2 text-sm text-[#0C7A60]/80">Keep shopping or head to your cart to review items.</p>
+            <button
+              type="button"
+              onClick={hideCartNotification}
+              className="mt-6 inline-flex items-center justify-center rounded-full border border-[#0C7A60] bg-[#0C7A60] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#095c48]"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      ) : null}
       <div className="mx-auto flex max-w-7xl flex-col overflow-hidden rounded-[36px] bg-white/10 shadow-2xl lg:flex-row">
         <aside className="w-full bg-[#0C7A60] px-8 py-10 text-white lg:w-1/3 lg:sticky lg:top-10 lg:overflow-auto lg:pr-4">
           <header className="space-y-3">
@@ -385,16 +556,25 @@ const Shop = () => {
 
         <main className="flex-1 bg-white px-6 py-10 md:px-10">
           <div className="flex flex-col gap-6">
-            <button
-              type="button"
-              onClick={handleBack}
-              className="flex w-fit items-center gap-2 rounded-full border border-[#0C7A60]/20 bg-[#E9F7F1] px-4 py-2 text-sm font-medium text-[#0C7A60] transition hover:border-[#0C7A60] hover:bg-[#D6F0E7]"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Back
-            </button>
+            <div className="flex w-full flex-col items-start gap-3 md:flex-row md:items-center md:justify-between">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex w-fit items-center gap-2 rounded-full border border-[#0C7A60] bg-[#0C7A60] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#095c48]"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Back to Dashboard
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/cart')}
+                className="flex w-fit items-center gap-2 rounded-full bg-[#0C7A60] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#095c48]"
+              >
+                Go to Cart
+              </button>
+            </div>
 
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <h2 className="text-2xl font-semibold text-gray-800">All Products</h2>
@@ -437,14 +617,19 @@ const Shop = () => {
 
             {filteredProducts.length ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    {...product}
-                    isOwn={Boolean(user && product.ownerId && user.id === product.ownerId)}
-                    onDelete={() => handleDelete(product.id)}
-                  />
-                ))}
+                {filteredProducts.map((product) => {
+                  const isOwnListing = Boolean(user && product.ownerId && user.id === product.ownerId);
+
+                  return (
+                    <ProductCard
+                      key={product.id}
+                      {...product}
+                      isOwn={isOwnListing}
+                      onDelete={isOwnListing ? () => handleDelete(product.id, product.ownerId) : undefined}
+                      onAddToCart={showCartNotification}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <p className="rounded-2xl bg-[#F5F5F5] px-6 py-10 text-center text-gray-500">

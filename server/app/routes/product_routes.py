@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .. import db
@@ -17,7 +19,12 @@ def get_products():
 @jwt_required()
 def get_my_products():
     """Get listings created by current user."""
-    user_id = get_jwt_identity()
+    identity = get_jwt_identity()
+    try:
+        user_id = int(identity)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'unauthorized'}), 403
+
     products = Product.query.filter_by(owner_id=user_id).order_by(Product.created_at.desc()).all()
     return jsonify({'items': [p.to_dict() for p in products]})
 
@@ -26,7 +33,11 @@ def get_my_products():
 @jwt_required()
 def get_product_stats():
     """Return aggregated stats for the current user."""
-    user_id = get_jwt_identity()
+    identity = get_jwt_identity()
+    try:
+        user_id = int(identity)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'unauthorized'}), 403
 
     total_listings = Product.query.filter_by(owner_id=user_id).count()
     total_sales_q = db.session.query(db.func.count(Order.id)).join(Product).filter(Product.owner_id == user_id)
@@ -57,9 +68,70 @@ def get_product_stats():
 @jwt_required()
 def get_my_orders():
     """Orders placed by the current user."""
-    user_id = get_jwt_identity()
+    identity = get_jwt_identity()
+    try:
+        user_id = int(identity)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'unauthorized'}), 403
     orders = Order.query.filter_by(buyer_id=user_id).order_by(Order.purchased_at.desc()).all()
     return jsonify({'items': [order.to_dict(include_product=True) for order in orders]})
+
+
+@product_bp.route('/orders', methods=['POST'])
+@jwt_required()
+def create_orders():
+    identity = get_jwt_identity()
+    try:
+        buyer_id = int(identity)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'unauthorized'}), 403
+
+    payload = request.get_json() or {}
+    items = payload.get('items')
+
+    if not isinstance(items, list) or not items:
+        return jsonify({'error': 'items array is required'}), 400
+
+    created_orders = []
+
+    try:
+        for item in items:
+            try:
+                product_id = int(item.get('product_id') or item.get('id'))
+            except (TypeError, ValueError):
+                return jsonify({'error': 'invalid product_id'}), 400
+
+            product = Product.query.get(product_id)
+            if not product:
+                return jsonify({'error': f'product {product_id} not found'}), 404
+
+            try:
+                quantity = max(int(item.get('quantity', 1)), 1)
+            except (TypeError, ValueError):
+                quantity = 1
+
+            try:
+                price_value = float(item.get('price_value', product.price or 0))
+            except (TypeError, ValueError):
+                price_value = float(product.price or 0)
+
+            total_price = price_value * quantity
+
+            order = Order(
+                buyer_id=buyer_id,
+                product_id=product.id,
+                price=total_price,
+                purchased_at=datetime.utcnow(),
+            )
+            db.session.add(order)
+            created_orders.append(order)
+
+        db.session.commit()
+    except Exception as exc:
+        db.session.rollback()
+        return jsonify({'error': 'failed to create orders', 'details': str(exc)}), 500
+
+    return jsonify({'orders': [order.to_dict(include_product=True) for order in created_orders]}), 201
 
 
 @product_bp.route('/<int:product_id>', methods=['GET'])
@@ -81,8 +153,9 @@ def create_product():
     try:
         from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
         verify_jwt_in_request(optional=True)
-        user_id = get_jwt_identity()
-    except:
+        identity = get_jwt_identity()
+        user_id = int(identity) if identity is not None else None
+    except Exception:
         user_id = None
     
     # If no authenticated user, use or create demo user
@@ -121,7 +194,12 @@ def create_product():
 @jwt_required()
 def update_product(product_id):
     """Update a product."""
-    user_id = get_jwt_identity()
+    identity = get_jwt_identity()
+    try:
+        user_id = int(identity)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'unauthorized'}), 403
+
     product = Product.query.get_or_404(product_id)
 
     # Check ownership
@@ -154,7 +232,12 @@ def update_product(product_id):
 @jwt_required()
 def delete_product(product_id):
     """Delete a product."""
-    user_id = get_jwt_identity()
+    identity = get_jwt_identity()
+    try:
+        user_id = int(identity)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'unauthorized'}), 403
+
     product = Product.query.get_or_404(product_id)
 
     # Check ownership

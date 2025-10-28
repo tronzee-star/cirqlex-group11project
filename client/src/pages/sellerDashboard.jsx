@@ -31,10 +31,10 @@ const SellerDashboard = () => {
   const sidebarLinks = [
     { label: "My listings", icon: FiGrid, to: "/seller-dashboard" },
     { label: "Switch to buy", icon: FiUsers, to: "/buyer-dashboard" },
+    { label: "Cart", icon: FiShoppingBag, to: "/cart" },
     { label: "Sell an item", icon: FiShoppingBag, to: "/sell" },
     { label: "Sales analytics", icon: FiBarChart2, to: null },
-    { label: "Payouts", icon: FiDollarSign, to: null },
-    { label: "Messages", icon: FiMessageSquare, to: null },
+    { label: "Payouts", icon: FiDollarSign, to: "/payouts" },
   ];
 
   useEffect(() => {

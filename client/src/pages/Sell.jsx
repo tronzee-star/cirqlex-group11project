@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 // Placeholder image for the left side
 const PRODUCT_DISPLAY_IMAGE = 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80';
 
 export default function Sell() {
+  const navigate = useNavigate();
+  const { token, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -19,6 +23,18 @@ export default function Sell() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (submitSuccess) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [submitSuccess]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -29,6 +45,10 @@ export default function Sell() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated || !token) {
+      setError('Please sign in to list a product.');
+      return;
+    }
     setIsSubmitting(true);
     setError('');
 
@@ -50,6 +70,7 @@ export default function Sell() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(productData),
       });
@@ -68,9 +89,6 @@ export default function Sell() {
           location: '',
         });
         setImageUrl('');
-
-        // Reset success message after 3 seconds
-        setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
         setError(data.error || 'Failed to create product listing');
       }
@@ -84,213 +102,234 @@ export default function Sell() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-700 via-teal-600 to-teal-800">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Sell with purpose</h1>
-          <p className="text-teal-100 text-lg">sell sustainable and ecofriendly products</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side - Image */}
-          <div className="flex items-start justify-center">
-            <div className="bg-gradient-to-br from-amber-100 to-amber-50 p-8 rounded-2xl shadow-xl w-full max-w-md">
-              <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-gray-800 leading-tight">
-                  Sell sustainable<br />
-                  and eco-friendly<br />
-                  products
-                </h2>
-                <div className="relative">
-                  <img
-                    src={PRODUCT_DISPLAY_IMAGE}
-                    alt="Eco-friendly products"
-                    className="w-full h-auto rounded-lg shadow-md"
-                  />
-                </div>
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-[36px] bg-white/95 shadow-2xl ring-1 ring-black/5">
+          <div className="bg-[#0C7A60] px-8 py-10 text-white sm:px-10">
+            <div className="flex flex-col gap-6">
+              <div className="text-center">
+                <h1 className="text-3xl font-semibold sm:text-4xl">Sell with purpose</h1>
+                <p className="mt-2 text-sm sm:text-base text-emerald-100">
+                  sell sustainable and ecofriendly products
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                  type="button"
+                  onClick={() => navigate('/seller-dashboard')}
+                  className="inline-flex w-full items-center justify-center rounded-full border border-white/40 px-6 py-2 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10 sm:w-auto sm:justify-start"
+                >
+                  ← Back to Seller Dashboard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/shop')}
+                  className="inline-flex w-full items-center justify-center rounded-full border border-white/40 px-6 py-2 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10 sm:w-auto sm:justify-end"
+                >
+                  Go to Shop →
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Right Side - Form */}
-          <div className="bg-white rounded-lg shadow-xl p-8">
-            {submitSuccess && (
-              <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded flex items-center">
-                <CheckCircle className="mr-2" size={20} />
-                Product listed successfully!
+          <div className="grid gap-10 px-6 pb-10 pt-8 sm:px-10 lg:grid-cols-[1fr_1.2fr] lg:items-start">
+            {/* Left Side - Story & Image */}
+            <div className="mx-auto w-full max-w-md rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-100 to-amber-50 p-8 shadow-inner">
+              <div className="space-y-6 text-center lg:text-left">
+                <h2 className="text-2xl font-semibold text-gray-800 leading-snug">
+                  Tell your sustainability story
+                </h2>
+                <p className="text-sm text-amber-800/80">
+                  Highlight the eco-friendly journey behind your product and inspire conscious buyers.
+                </p>
+                <div className="relative overflow-hidden rounded-2xl">
+                  <img
+                    src={PRODUCT_DISPLAY_IMAGE}
+                    alt="Eco-friendly products"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
               </div>
-            )}
+            </div>
 
-            {error && (
-              <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-center">
-                <AlertCircle className="mr-2" size={20} />
-                {error}
-              </div>
-            )}
+            {/* Right Side - Form */}
+            <div className="w-full rounded-3xl border border-emerald-100 bg-white/90 p-6 shadow-lg sm:p-8">
+              {error && (
+                <div className="mb-6 flex items-center rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                  <AlertCircle className="mr-2" size={20} />
+                  {error}
+                </div>
+              )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Product Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Product name
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="enter product name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  required
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="enter product description"
-                  rows="4"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
-                  required
-                />
-              </div>
-
-              {/* Price */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  price
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  placeholder="enter price"
-                  step="0.01"
-                  min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  required
-                />
-              </div>
-
-              {/* Condition */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  condition
-                </label>
-                <select
-                  name="condition"
-                  value={formData.condition}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  required
-                >
-                  <option value="">choose condition</option>
-                  <option value="New">New</option>
-                  <option value="Used - Like New">Used - Like New</option>
-                  <option value="Used - Good">Used - Good</option>
-                  <option value="Pre-loved">Pre-loved</option>
-                  <option value="Used">Used</option>
-                </select>
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  required
-                >
-                  <option value="">choose category</option>
-                  <option value="Home & Living">Home & Living</option>
-                  <option value="Furniture">Furniture</option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Footwear">Footwear</option>
-                  <option value="Lifestyle">Lifestyle</option>
-                  <option value="Education">Education</option>
-                  <option value="Misc">Miscellaneous</option>
-                </select>
-              </div>
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="enter location (e.g., Nairobi)"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-
-              {/* Image Upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  upload images
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
-                  <Upload className="mx-auto text-gray-400 mb-2" size={40} />
-                  <p className="text-gray-600 text-sm mb-4">
-                    drag and drop images here or select file
-                  </p>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Product Name */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Product name</label>
                   <input
                     type="text"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="Paste image URL here"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 mb-2"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="enter product name"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+                    required
                   />
-                  <button
-                    type="button"
-                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md text-sm font-medium transition"
-                  >
-                    Upload images...
-                  </button>
                 </div>
 
-                {/* Image Preview */}
-                {imageUrl && (
-                  <div className="mt-4">
-                    <img
-                      src={imageUrl}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg"
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/600x480?text=Invalid+Image+URL';
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+                {/* Description */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="enter product description"
+                    rows="4"
+                    className="w-full resize-none rounded-xl border border-gray-300 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+                    required
+                  />
+                </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-md font-semibold transition disabled:bg-teal-300 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Submitting...' : 'List Product'}
-              </button>
-            </form>
+                {/* Price */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">price</label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    placeholder="enter price"
+                    step="0.01"
+                    min="0"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+                    required
+                  />
+                </div>
+
+                {/* Condition */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">condition</label>
+                  <select
+                    name="condition"
+                    value={formData.condition}
+                    onChange={handleInputChange}
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+                    required
+                  >
+                    <option value="">choose condition</option>
+                    <option value="New">New</option>
+                    <option value="Used - Like New">Used - Like New</option>
+                    <option value="Used - Good">Used - Good</option>
+                    <option value="Pre-loved">Pre-loved</option>
+                    <option value="Used">Used</option>
+                  </select>
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Category</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+                    required
+                  >
+                    <option value="">choose category</option>
+                    <option value="Home & Living">Home & Living</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Lifestyle">Lifestyle</option>
+                    <option value="Education">Education</option>
+                    <option value="Misc">Miscellaneous</option>
+                  </select>
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="enter location (e.g., Nairobi)"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+                  />
+                </div>
+
+                {/* Image Upload */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">upload images</label>
+                  <div className="rounded-2xl border-2 border-dashed border-teal-200 bg-teal-50/60 p-6 text-center">
+                    <Upload className="mx-auto mb-3 text-teal-400" size={40} />
+                    <p className="mb-4 text-xs font-medium uppercase tracking-wide text-teal-600">
+                      drag and drop images here or select file
+                    </p>
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="Paste image URL here"
+                      className="mb-3 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-200"
+                    />
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center rounded-full bg-[#109071] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#0c755c]"
+                    >
+                      Upload images...
+                    </button>
+                  </div>
+
+                  {/* Image Preview */}
+                  {imageUrl && (
+                    <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200">
+                      <img
+                        src={imageUrl}
+                        alt="Preview"
+                        className="h-48 w-full object-cover"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/600x480?text=Invalid+Image+URL';
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-2 w-full rounded-full bg-[#0C7A60] py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#095c48] disabled:bg-teal-300 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Submitting...' : 'List Product'}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
+      {submitSuccess ? (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md rounded-3xl border border-white/40 bg-white px-8 py-10 text-center shadow-2xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <CheckCircle size={36} />
+            </div>
+            <h2 className="mt-6 text-2xl font-semibold text-[#0C7A60]">Listed to products</h2>
+            <p className="mt-2 text-sm text-[#0C7A60]/80">
+              Your product is now live. Continue adding more listings or return to the dashboard.
+            </p>
+            <button
+              type="button"
+              onClick={() => setSubmitSuccess(false)}
+              className="mt-6 inline-flex items-center justify-center rounded-full bg-[#0C7A60] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#095c48]"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
