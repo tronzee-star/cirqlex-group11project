@@ -21,6 +21,7 @@ const SellerDashboard = () => {
     purchases_count: 0,
     purchases_total: 0,
     recent_orders: [],
+    insights: null,
   });
   const [myListings, setMyListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -73,6 +74,7 @@ const SellerDashboard = () => {
             purchases_count: statsJson.purchases_count || 0,
             purchases_total: statsJson.purchases_total || 0,
             recent_orders: statsJson.recent_orders || [],
+            insights: statsJson.insights || null,
           });
           setMyListings(listingsJson.items || []);
           setError("");
@@ -97,6 +99,7 @@ const SellerDashboard = () => {
   }, [token]);
 
   const listings = useMemo(() => myListings, [myListings]);
+  const aiSummary = statSummary.insights?.ai;
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-KE", {
@@ -227,21 +230,33 @@ const SellerDashboard = () => {
           <section className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="rounded-3xl border border-emerald-100 p-6">
               <h3 className="text-base font-semibold text-gray-800">Environmental Impact</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                Summary of savings and impact from your listings and sales.
+              <p className="mt-2 text-sm text-gray-600">
+                {aiSummary?.environmental_impact ||
+                  "Close sales to unlock tailored impact insights for your storefront."}
               </p>
             </div>
             <div className="rounded-3xl border border-emerald-100 p-6">
-              <h3 className="text-base font-semibold text-gray-800">Recommendations</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                Tips to further reduce footprint and increase conversions.
-              </p>
+              <h3 className="text-base font-semibold text-gray-800">Recommended Actions</h3>
+              {aiSummary?.recommended_actions?.length ? (
+                <ul className="mt-3 space-y-2 text-sm text-gray-600">
+                  {aiSummary.recommended_actions.map((tip, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="mt-1 text-emerald-600">•</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-sm text-gray-600">
+                  Complete transactions to receive AI-powered suggestions for your listings.
+                </p>
+              )}
             </div>
           </section>
         </main>
       </div>
     </div>
   );
-};
+}
 
 export default SellerDashboard;
