@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -22,6 +22,18 @@ export default function Sell() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (submitSuccess) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [submitSuccess]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -77,9 +89,6 @@ export default function Sell() {
           location: '',
         });
         setImageUrl('');
-
-        // Reset success message after 3 seconds
-        setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
         setError(data.error || 'Failed to create product listing');
       }
@@ -144,13 +153,6 @@ export default function Sell() {
 
             {/* Right Side - Form */}
             <div className="w-full rounded-3xl border border-emerald-100 bg-white/90 p-6 shadow-lg sm:p-8">
-              {submitSuccess && (
-                <div className="mb-6 flex items-center rounded-xl border border-green-300 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
-                  <CheckCircle className="mr-2" size={20} />
-                  Product listed successfully!
-                </div>
-              )}
-
               {error && (
                 <div className="mb-6 flex items-center rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                   <AlertCircle className="mr-2" size={20} />
@@ -308,6 +310,26 @@ export default function Sell() {
           </div>
         </div>
       </div>
+      {submitSuccess ? (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md rounded-3xl border border-white/40 bg-white px-8 py-10 text-center shadow-2xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <CheckCircle size={36} />
+            </div>
+            <h2 className="mt-6 text-2xl font-semibold text-[#0C7A60]">Listed to products</h2>
+            <p className="mt-2 text-sm text-[#0C7A60]/80">
+              Your product is now live. Continue adding more listings or return to the dashboard.
+            </p>
+            <button
+              type="button"
+              onClick={() => setSubmitSuccess(false)}
+              className="mt-6 inline-flex items-center justify-center rounded-full bg-[#0C7A60] px-6 py-2 text-sm font-semibold text-white transition hover:bg-[#095c48]"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
