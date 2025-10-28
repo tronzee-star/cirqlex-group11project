@@ -14,6 +14,7 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
 import ChatWithAI from './pages/ChatWithAI';
+import Sustainability from './pages/sustainability';
 import { useAuth } from "./context/AuthContext.jsx";
 
 const PublicLayout = () => (
@@ -26,7 +27,7 @@ const PublicLayout = () => (
 const AppLayout = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const authOnlyRoutes = ['/buyer-dashboard', '/seller-dashboard', '/shop', '/chat-with-ai'];
+  const authOnlyRoutes = ['/buyer-dashboard', '/seller-dashboard', '/shop', '/chat-with-ai', '/sustainability'];
   const shouldHideFooter = isAuthenticated || authOnlyRoutes.some((route) => location.pathname.startsWith(route));
 
   return (
@@ -120,6 +121,14 @@ function App() {
         element={
           <ProtectedRoute>
             <ChatWithAI />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/sustainability"
+        element={
+          <ProtectedRoute>
+            <Sustainability />
           </ProtectedRoute>
         }
       />
