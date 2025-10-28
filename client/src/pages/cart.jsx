@@ -9,20 +9,20 @@ const currencyFormatter = new Intl.NumberFormat('en-KE', {
 });
 
 const CartTable = ({ items, onIncrease, onDecrease, onRemove }) => (
-  <div className="overflow-hidden rounded-3xl border border-emerald-100 bg-emerald-50/60 shadow-inner">
+  <div className="overflow-hidden rounded-2xl border-2 border-[#C9E6DC] bg-white shadow-sm">
     <table className="min-w-full">
-      <thead>
-        <tr className="text-left text-sm uppercase tracking-wide text-emerald-800/80">
+      <thead className="bg-[#EAF7F1]">
+        <tr className="text-left text-sm uppercase tracking-wide text-[#0C7A60]">
           <th className="px-6 py-4">Product</th>
           <th className="px-6 py-4">Price</th>
-          <th className="px-6 py-4">Quantity</th>
-          <th className="px-6 py-4">Subtotal</th>
+          <th className="px-6 py-4 text-center">Quantity</th>
+          <th className="px-6 py-4 text-right">Subtotal</th>
           <th className="px-6 py-4"></th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-emerald-100 text-sm text-emerald-900">
+      <tbody className="divide-y divide-[#C9E6DC] text-sm text-[#0C7A60]">
         {items.map((item) => (
-          <tr key={item.id} className="bg-white/60 hover:bg-white">
+          <tr key={item.id} className="bg-white hover:bg-[#F5FBF8]">
             <td className="px-6 py-4">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 overflow-hidden rounded-xl border border-emerald-100 bg-white">
@@ -59,7 +59,7 @@ const CartTable = ({ items, onIncrease, onDecrease, onRemove }) => (
                 </button>
               </div>
             </td>
-            <td className="px-6 py-4 font-semibold text-emerald-800">
+            <td className="px-6 py-4 text-right font-semibold">
               {currencyFormatter.format(item.priceValue * item.quantity)}
             </td>
             <td className="px-6 py-4 text-right">
@@ -79,32 +79,34 @@ const CartTable = ({ items, onIncrease, onDecrease, onRemove }) => (
 );
 
 const OrderSummary = ({ subtotal, shipping, estimatedTax, total }) => (
-  <div className="rounded-3xl border border-emerald-100 bg-white p-6 shadow-lg">
-    <h3 className="text-lg font-semibold text-emerald-900">Order Summary</h3>
-    <dl className="mt-4 space-y-3 text-sm">
+  <div className="rounded-2xl border-2 border-[#C9E6DC] bg-white px-8 py-6 shadow-sm">
+    <h3 className="text-lg font-semibold text-[#0C7A60]">Order Summary</h3>
+    <dl className="mt-6 space-y-4 text-sm text-[#0C7A60]">
       <div className="flex items-center justify-between">
-        <dt className="text-emerald-700">Subtotal</dt>
-        <dd className="font-medium text-emerald-900">{currencyFormatter.format(subtotal)}</dd>
+        <dt className="font-medium">Subtotal</dt>
+        <dd className="font-semibold">{currencyFormatter.format(subtotal)}</dd>
       </div>
       <div className="flex items-center justify-between">
-        <dt className="text-emerald-700">Shipping</dt>
-        <dd className="font-medium text-emerald-900">{shipping === 0 ? 'Free' : currencyFormatter.format(shipping)}</dd>
+        <dt className="font-medium">Shipping</dt>
+        <dd className="font-semibold">{shipping === 0 ? 'Free' : currencyFormatter.format(shipping)}</dd>
       </div>
       <div className="flex items-center justify-between">
-        <dt className="text-emerald-700">Estimated Tax</dt>
-        <dd className="font-medium text-emerald-900">{currencyFormatter.format(estimatedTax)}</dd>
+        <dt className="font-medium">Estimated Tax</dt>
+        <dd className="font-semibold">{currencyFormatter.format(estimatedTax)}</dd>
       </div>
-      <div className="flex items-center justify-between border-t border-emerald-100 pt-4 text-base font-semibold text-emerald-900">
+      <div className="flex items-center justify-between border-t border-[#C9E6DC] pt-4 text-base font-semibold">
         <dt>Total</dt>
         <dd>{currencyFormatter.format(total)}</dd>
       </div>
     </dl>
-    <button
-      type="button"
-      className="mt-6 w-full rounded-full bg-[#00A651] px-5 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245]"
-    >
-      Proceed to Checkout
-    </button>
+    <div className="mt-6 flex justify-end">
+      <button
+        type="button"
+        className="inline-flex items-center justify-center rounded-full bg-[#00A651] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245]"
+      >
+        Proceed to Checkout
+      </button>
+    </div>
   </div>
 );
 
@@ -135,48 +137,49 @@ const CartPage = () => {
   };
 
   return (
-    <section className="min-h-screen bg-[#0C7A60]/15 py-20">
-      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 md:px-6">
-        <header className="flex flex-col gap-4 text-center text-emerald-900">
-          <h1 className="text-3xl font-semibold">Your Cart</h1>
-          <p className="text-sm text-emerald-700">
-            Review the items you have added. Adjust quantities or proceed to checkout when you're ready.
-          </p>
-        </header>
+    <section className="min-h-screen bg-[#0C7A60]/20 py-16">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-[32px] border-4 border-[#2AA9B9] bg-white shadow-2xl">
+          <div className="border-b border-[#2AA9B9]/40 bg-[#0C7A60] px-6 py-6 text-center text-white sm:px-10">
+            <h1 className="text-2xl font-semibold sm:text-3xl">Your Cart</h1>
+          </div>
 
-        {hasItems ? (
-          <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-            <div className="space-y-4">
+          {hasItems ? (
+            <div className="space-y-8 px-6 py-10 sm:px-10">
               <CartTable items={items} onIncrease={handleIncrease} onDecrease={handleDecrease} onRemove={removeItem} />
-              <div className="flex items-center justify-between text-sm text-emerald-700">
-                <Link to="/shop" className="font-medium text-emerald-700 hover:text-emerald-900">
+
+              <div className="flex flex-col gap-3 text-sm text-[#0C7A60] sm:flex-row sm:items-center sm:justify-between">
+                <Link to="/shop" className="font-semibold hover:text-[#095c48]">
                   ← Continue Shopping
                 </Link>
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="text-xs font-semibold uppercase tracking-wide text-red-500 hover:text-red-600"
+                  className="text-xs font-semibold uppercase tracking-wide text-red-500 transition hover:text-red-600"
                 >
                   Clear Cart
                 </button>
               </div>
+
+              <OrderSummary {...derivedTotals} />
             </div>
-            <OrderSummary {...derivedTotals} />
-          </div>
-        ) : (
-          <div className="rounded-3xl border border-emerald-200 bg-white/80 px-8 py-16 text-center shadow-lg">
-            <h2 className="text-xl font-semibold text-emerald-900">Your cart is empty</h2>
-            <p className="mt-2 text-sm text-emerald-700">
-              Explore the marketplace and add sustainable finds to your cart.
-            </p>
-            <Link
-              to="/shop"
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-[#00A651] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245]"
-            >
-              Browse Products
-            </Link>
-          </div>
-        )}
+          ) : (
+            <div className="px-6 py-14 text-center sm:px-10">
+              <div className="mx-auto max-w-md space-y-4 rounded-2xl border-2 border-dashed border-[#2AA9B9]/60 bg-[#F5FBF8] px-8 py-12">
+                <h2 className="text-xl font-semibold text-[#0C7A60]">Your cart is empty</h2>
+                <p className="text-sm text-[#0C7A60]/80">
+                  Explore the marketplace and add sustainable finds to your cart.
+                </p>
+                <Link
+                  to="/shop"
+                  className="inline-flex items-center justify-center rounded-full bg-[#00A651] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245]"
+                >
+                  Browse Products
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

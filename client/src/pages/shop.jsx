@@ -306,9 +306,14 @@ const Shop = () => {
     navigate(-1);
   };
 
-  const handleDelete = async (productId) => {
+  const handleDelete = async (productId, ownerId) => {
     if (!token) {
       alert('Please sign in to delete your listing.');
+      return;
+    }
+
+    if (!user || ownerId !== user.id) {
+      alert('You can only delete listings you created.');
       return;
     }
 
@@ -385,16 +390,25 @@ const Shop = () => {
 
         <main className="flex-1 bg-white px-6 py-10 md:px-10">
           <div className="flex flex-col gap-6">
-            <button
-              type="button"
-              onClick={handleBack}
-              className="flex w-fit items-center gap-2 rounded-full border border-[#0C7A60]/20 bg-[#E9F7F1] px-4 py-2 text-sm font-medium text-[#0C7A60] transition hover:border-[#0C7A60] hover:bg-[#D6F0E7]"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Back
-            </button>
+            <div className="flex w-full flex-col items-start gap-3 md:flex-row md:items-center md:justify-between">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex w-fit items-center gap-2 rounded-full border border-[#0C7A60] bg-[#0C7A60] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#095c48]"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M15 18l-6-6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/cart')}
+                className="flex w-fit items-center gap-2 rounded-full bg-[#0C7A60] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#095c48]"
+              >
+                Go to Cart
+              </button>
+            </div>
 
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <h2 className="text-2xl font-semibold text-gray-800">All Products</h2>
@@ -437,14 +451,18 @@ const Shop = () => {
 
             {filteredProducts.length ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    {...product}
-                    isOwn={Boolean(user && product.ownerId && user.id === product.ownerId)}
-                    onDelete={() => handleDelete(product.id)}
-                  />
-                ))}
+                {filteredProducts.map((product) => {
+                  const isOwnListing = Boolean(user && product.ownerId && user.id === product.ownerId);
+
+                  return (
+                    <ProductCard
+                      key={product.id}
+                      {...product}
+                      isOwn={isOwnListing}
+                      onDelete={isOwnListing ? () => handleDelete(product.id, product.ownerId) : undefined}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <p className="rounded-2xl bg-[#F5F5F5] px-6 py-10 text-center text-gray-500">
