@@ -5,28 +5,43 @@ import { useAuth } from '../context/AuthContext';
 const Sustainability = () => {
   const chartRef = useRef(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, token } = useAuth();
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchInsights = async () => {
       const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
       
       try {
-        const payload = user?.id ? { buyer_id: user.id, timeframe_days: 180 } : {};
+        if (!token) {
+          setError('Please sign in again to view your impact report.');
+          setInsights(null);
+          return;
+        }
+
         const response = await fetch(`${API_BASE}/insights/`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ timeframe_days: 180 }),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setInsights(data.insights);
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          const message = payload?.error || 'Unable to load sustainability insights.';
+          throw new Error(message);
         }
+
+        const data = await response.json();
+        setInsights(data.insights);
+        setError('');
       } catch (err) {
         console.error('Failed to fetch insights:', err);
+        setError(err.message || 'Unable to load sustainability insights.');
       } finally {
         setLoading(false);
       }
@@ -118,6 +133,12 @@ const Sustainability = () => {
           </h2>
           <p className="mt-2 text-lg text-white/90">Your Sustainability Impact</p>
         </section>
+
+        {error && (
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
 
         {/* KPI Cards */}
         <section className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
