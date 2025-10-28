@@ -120,6 +120,9 @@ const productSeed = [
 const mapApiProductToClient = (item) => {
   const rawPrice = item?.price;
   const priceValue = typeof rawPrice === 'number' ? rawPrice : Number(rawPrice) || 0;
+  const co2Savings = typeof item?.co2_savings_per_purchase === 'number'
+    ? item.co2_savings_per_purchase
+    : Number(item?.co2_savings_per_purchase) || 0;
 
   return {
     id: item?.id,
@@ -131,6 +134,7 @@ const mapApiProductToClient = (item) => {
     location: item?.location || 'N/A',
     image: item?.image_url || FALLBACK_IMAGE,
     ownerId: item?.owner_id,
+    co2Savings,
   };
 };
 
