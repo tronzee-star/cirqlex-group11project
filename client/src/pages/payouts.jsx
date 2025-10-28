@@ -77,8 +77,6 @@ export default function Payouts() {
   const lifetimeRevenue = stats.revenue || 0;
   const totalSales = stats.sales || 0;
   const averageOrderValue = totalSales > 0 ? lifetimeRevenue / totalSales : 0;
-  const pendingPayout = lifetimeRevenue * 0.1;
-  const lastPayout = lifetimeRevenue - pendingPayout;
 
   return (
     <section className="min-h-screen bg-[#0C7A60]/15 py-12">
@@ -106,7 +104,7 @@ export default function Payouts() {
               </div>
             ) : null}
 
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-4 md:grid-cols-3">
               <article className="rounded-3xl border border-emerald-100 bg-emerald-50/60 px-5 py-6">
                 <h2 className="text-sm font-medium text-emerald-700">Lifetime Revenue</h2>
                 <p className="mt-3 text-3xl font-semibold text-emerald-900">{formatCurrency(lifetimeRevenue)}</p>
@@ -118,11 +116,6 @@ export default function Payouts() {
               <article className="rounded-3xl border border-emerald-100 bg-emerald-50/60 px-5 py-6">
                 <h2 className="text-sm font-medium text-emerald-700">Average Order Value</h2>
                 <p className="mt-3 text-3xl font-semibold text-emerald-900">{formatCurrency(averageOrderValue)}</p>
-              </article>
-              <article className="rounded-3xl border border-emerald-100 bg-emerald-50/60 px-5 py-6">
-                <h2 className="text-sm font-medium text-emerald-700">Pending Payout</h2>
-                <p className="mt-3 text-3xl font-semibold text-emerald-900">{formatCurrency(pendingPayout)}</p>
-                <p className="mt-1 text-xs text-emerald-700/70">Estimated next transfer in 3 business days</p>
               </article>
             </section>
 
@@ -150,14 +143,12 @@ export default function Payouts() {
                           <th className="py-3 px-4 font-medium">Order</th>
                           <th className="py-3 px-4 font-medium">Buyer</th>
                           <th className="py-3 px-4 font-medium text-right">Amount</th>
-                          <th className="py-3 px-4 font-medium text-right">Payout Share</th>
                           <th className="py-3 px-4 font-medium text-right">Date</th>
                         </tr>
                       </thead>
                       <tbody className="text-sm text-gray-700">
                         {orders.map((order) => {
                           const amount = order?.price || 0;
-                          const sellerShare = amount * 0.9;
                           const buyerName = order?.buyer?.name || order?.buyer?.email || 'Buyer';
                           const productTitle = order?.product?.title || 'Listing';
                           const date = order?.purchased_at
@@ -172,7 +163,6 @@ export default function Payouts() {
                               </td>
                               <td className="py-3 px-4">{buyerName}</td>
                               <td className="py-3 px-4 text-right text-[#0C7A60]">{formatCurrency(amount)}</td>
-                              <td className="py-3 px-4 text-right">{formatCurrency(sellerShare)}</td>
                               <td className="py-3 px-4 text-right text-gray-500">{date}</td>
                             </tr>
                           );
@@ -184,23 +174,6 @@ export default function Payouts() {
               </div>
 
               <aside className="flex flex-col gap-6">
-                <div className="rounded-3xl border border-emerald-100 bg-emerald-50/60 p-6">
-                  <h3 className="text-base font-semibold text-gray-800">Upcoming Transfer</h3>
-                  <p className="mt-2 text-sm text-gray-600">
-                    We initiate payouts every Friday for balances above KES 1,000.
-                  </p>
-                  <dl className="mt-4 space-y-3 text-sm text-[#0C7A60]">
-                    <div className="flex items-center justify-between">
-                      <dt>Next transfer estimate</dt>
-                      <dd className="font-semibold">{formatCurrency(pendingPayout)}</dd>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <dt>Last transfer</dt>
-                      <dd>{formatCurrency(lastPayout)}</dd>
-                    </div>
-                  </dl>
-                </div>
-
                 <div className="rounded-3xl border border-emerald-100 bg-white p-6">
                   <h3 className="text-base font-semibold text-gray-800">Need help?</h3>
                   <p className="mt-2 text-sm text-gray-600">
@@ -218,6 +191,13 @@ export default function Payouts() {
                   </div>
                 </div>
               </aside>
+            </section>
+
+            <section className="rounded-3xl border border-emerald-100 bg-emerald-50/50 px-6 py-5 text-sm text-[#0C7A60]">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <span className="font-medium">Total revenue to date</span>
+                <span className="text-2xl font-semibold text-[#0C7A60]">{formatCurrency(lifetimeRevenue)}</span>
+              </div>
             </section>
           </div>
         </div>
