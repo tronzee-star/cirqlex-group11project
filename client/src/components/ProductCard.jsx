@@ -1,10 +1,23 @@
 import React, { useMemo, useState } from 'react';
 import { useCart } from '../context/CardContext.jsx';
 
-const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDelete, onAddToCart, onEdit }) => {
+const ProductCard = ({
+  id,
+  image,
+  name,
+  price,
+  priceValue,
+  co2Savings = 0,
+  isOwn = false,
+  onDelete,
+  onAddToCart,
+  onEdit,
+}) => {
   const [imgSrc, setImgSrc] = useState(image);
   const { addItem } = useCart();
   const fallbackImage = 'https://via.placeholder.com/400x320?text=Image+Unavailable';
+
+  const normalizedCo2 = Number.isFinite(co2Savings) ? co2Savings : 0;
 
   const handleImageError = () => {
     setImgSrc(fallbackImage);
@@ -44,6 +57,12 @@ const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDele
       <div className="p-4 text-center space-y-3">
         <h3 className="text-sm font-semibold text-gray-800 capitalize">{name}</h3>
         <p className="text-sm text-gray-600">ksh {formattedPrice}</p>
+        <div className="flex items-center justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+            <span role="img" aria-label="leaf">🌿</span>
+            Saves {normalizedCo2.toFixed(1)} kg CO₂
+          </span>
+        </div>
         {!isOwn ? (
           <button
             type="button"
