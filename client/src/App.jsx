@@ -13,6 +13,7 @@ import Payouts from './pages/payouts';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
+import ChatWithAI from './pages/ChatWithAI';
 import { useAuth } from "./context/AuthContext.jsx";
 
 const PublicLayout = () => (
@@ -25,7 +26,7 @@ const PublicLayout = () => (
 const AppLayout = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const authOnlyRoutes = ['/buyer-dashboard', '/seller-dashboard', '/shop'];
+  const authOnlyRoutes = ['/buyer-dashboard', '/seller-dashboard', '/shop', '/chat-with-ai'];
   const shouldHideFooter = isAuthenticated || authOnlyRoutes.some((route) => location.pathname.startsWith(route));
 
   return (
@@ -111,6 +112,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Payouts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/chat-with-ai"
+        element={
+          <ProtectedRoute>
+            <ChatWithAI />
           </ProtectedRoute>
         }
       />
