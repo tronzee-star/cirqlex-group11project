@@ -8,6 +8,8 @@ import SellerDashboard from './pages/sellerDashboard';
 import Shop from './pages/shop';
 import Sell from './pages/Sell';
 import Cart from './pages/cart';
+import CheckoutReceipt from './pages/CheckoutReceipt';
+import Payouts from './pages/payouts';
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
@@ -93,6 +95,22 @@ function App() {
         element={
           <ProtectedRoute>
             <Cart />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkout/receipt"
+        element={
+          <ProtectedRoute>
+            <CheckoutReceipt />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payouts"
+        element={
+          <ProtectedRoute>
+            <Payouts />
           </ProtectedRoute>
         }
       />

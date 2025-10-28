@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useCart } from '../context/CardContext.jsx';
 
-const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDelete, onAddToCart }) => {
+const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDelete, onAddToCart, onEdit }) => {
   const [imgSrc, setImgSrc] = useState(image);
   const { addItem } = useCart();
   const fallbackImage = 'https://via.placeholder.com/400x320?text=Image+Unavailable';
@@ -44,13 +44,24 @@ const ProductCard = ({ id, image, name, price, priceValue, isOwn = false, onDele
       <div className="p-4 text-center space-y-3">
         <h3 className="text-sm font-semibold text-gray-800 capitalize">{name}</h3>
         <p className="text-sm text-gray-600">ksh {formattedPrice}</p>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          className="inline-flex items-center justify-center w-full rounded-full bg-[#00A651] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#009245]"
-        >
-          Add to Cart
-        </button>
+        {!isOwn ? (
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="inline-flex items-center justify-center w-full rounded-full bg-[#00A651] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#009245]"
+          >
+            Add to Cart
+          </button>
+        ) : null}
+        {isOwn && typeof onEdit === 'function' ? (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="inline-flex items-center justify-center w-full rounded-full border border-[#0C7A60]/40 bg-white px-4 py-2 text-sm font-semibold text-[#0C7A60] transition-colors hover:border-[#0C7A60] hover:bg-[#E9F7F1]"
+          >
+            Edit Listing
+          </button>
+        ) : null}
         {isOwn && onDelete ? (
           <button
             type="button"
