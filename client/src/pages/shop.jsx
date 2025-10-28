@@ -303,7 +303,7 @@ const Shop = () => {
   );
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/buyer-dashboard');
   };
 
   const handleDelete = async (productId, ownerId) => {
