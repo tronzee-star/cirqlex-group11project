@@ -14,6 +14,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
 const BuyerDashboard = () => {
   const { token } = useAuth();
+  const [aiSummary, setAiSummary] = useState(null);
   const [stats, setStats] = useState({
     listings: 0,
     sales: 0,
@@ -37,6 +38,24 @@ const BuyerDashboard = () => {
   ];
 
   useEffect(() => {
+    const navigationState = location.state;
+    if (navigationState?.dashboard) {
+      const stateStats = navigationState.dashboard;
+      setStats({
+        listings: stateStats.listings || 0,
+        sales: stateStats.sales || 0,
+        revenue: stateStats.revenue || 0,
+        purchases_count: stateStats.purchases_count || 0,
+        purchases_total: stateStats.purchases_total || 0,
+        recent_orders: navigationState.recentOrders || stateStats.recent_orders || [],
+      });
+      if (navigationState.insights?.ai) {
+        setAiSummary(navigationState.insights.ai);
+      }
+      setError('');
+      setLoading(false);
+    }
+
     let ignore = false;
 
     const fetchStats = async () => {
@@ -60,6 +79,25 @@ const BuyerDashboard = () => {
 
         const data = await response.json();
 
+        let recentOrders = Array.isArray(data.recent_orders) ? data.recent_orders : [];
+        if (!recentOrders.length && (data.purchases_count || 0) > 0) {
+          try {
+            const ordersResponse = await fetch(`${API_BASE}/products/orders`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            if (ordersResponse.ok) {
+              const ordersJson = await ordersResponse.json();
+              if (Array.isArray(ordersJson.items)) {
+                recentOrders = ordersJson.items;
+              }
+            }
+          } catch (ordersErr) {
+            console.warn('Unable to fetch detailed orders list:', ordersErr);
+          }
+        }
+
         if (!ignore) {
           setStats({
             listings: data.listings || 0,
@@ -67,8 +105,11 @@ const BuyerDashboard = () => {
             revenue: data.revenue || 0,
             purchases_count: data.purchases_count || 0,
             purchases_total: data.purchases_total || 0,
-            recent_orders: data.recent_orders || [],
+            recent_orders: recentOrders,
           });
+          if (data?.insights?.ai) {
+            setAiSummary(data.insights.ai);
+          }
           setError("");
         }
       } catch (err) {
@@ -90,7 +131,20 @@ const BuyerDashboard = () => {
     };
   }, [token]);
 
-  const orders = useMemo(() => stats.recent_orders || [], [stats.recent_orders]);
+  const orders = useMemo(
+    () => {
+      const list = stats.recent_orders || [];
+      return list
+        .filter(Boolean)
+        .sort((a, b) => {
+          const aDate = a?.purchased_at ? new Date(a.purchased_at).getTime() : 0;
+          const bDate = b?.purchased_at ? new Date(b.purchased_at).getTime() : 0;
+          return bDate - aDate;
+        })
+        .slice(0, 10);
+    },
+    [stats.recent_orders]
+  );
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-KE", {
@@ -208,12 +262,17 @@ const BuyerDashboard = () => {
                   </thead>
                   <tbody className="text-sm text-gray-700">
                     {orders.map((order) => (
-                      <tr key={order.id} className="border-t border-emerald-50 hover:bg-emerald-50/40">
-                        <td className="py-3 px-4">{order.product?.title || "Listing"}</td>
-                        <td className="py-3 px-4">{order.product?.owner?.name || order.product?.owner?.email || "-"}</td>
-                        <td className="py-3 px-4 text-emerald-700">{formatCurrency(order.price)}</td>
+                      <tr
+                        key={order?.id || Math.random()}
+                        className="border-t border-emerald-50 hover:bg-emerald-50/40"
+                      >
+                        <td className="py-3 px-4">{order?.product?.title || "Listing"}</td>
+                        <td className="py-3 px-4">
+                          {order?.product?.owner?.name || order?.product?.owner?.email || "-"}
+                        </td>
+                        <td className="py-3 px-4 text-emerald-700">{formatCurrency(order?.price)}</td>
                         <td className="py-3 px-4 text-gray-500">
-                          {order.purchased_at
+                          {order?.purchased_at
                             ? new Date(order.purchased_at).toLocaleDateString()
                             : "—"}
                         </td>
@@ -228,15 +287,27 @@ const BuyerDashboard = () => {
           <section className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="rounded-3xl border border-emerald-100 p-6">
               <h3 className="text-base font-semibold text-gray-800">Environmental Impact</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                Summary of savings and impact from your purchases.
+              <p className="mt-2 text-sm text-gray-600">
+                {aiSummary?.environmental_impact ||
+                  "Confirm a purchase to generate a personalised impact summary."}
               </p>
             </div>
             <div className="rounded-3xl border border-emerald-100 p-6">
               <h3 className="text-base font-semibold text-gray-800">Recommended Actions</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                Tips to further reduce environmental footprint.
-              </p>
+              {aiSummary?.recommended_actions?.length ? (
+                <ul className="mt-3 space-y-2 text-sm text-gray-600">
+                  {aiSummary.recommended_actions.map((tip, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="mt-1 text-emerald-600">•</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-sm text-gray-600">
+                  Complete a purchase to unlock tailored sustainability tips.
+                </p>
+              )}
             </div>
           </section>
         </main>

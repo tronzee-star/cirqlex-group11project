@@ -26,6 +26,7 @@ const CheckoutReceipt = () => {
   const { token } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [confirmationData, setConfirmationData] = useState(null);
 
   useEffect(() => {
     if (!receiptData) {
@@ -103,7 +104,9 @@ const CheckoutReceipt = () => {
         throw new Error(message);
       }
 
+      const result = await response.json();
       clearCart();
+      setConfirmationData(result);
       setShowConfirmation(true);
     } catch (error) {
       console.error('Error confirming payment:', error);
@@ -238,6 +241,11 @@ const CheckoutReceipt = () => {
               </Link>
               <Link
                 to="/buyer-dashboard"
+                state={confirmationData ? {
+                  dashboard: confirmationData.dashboard,
+                  recentOrders: confirmationData.dashboard?.recent_orders || confirmationData.orders || [],
+                  insights: confirmationData.insights || null,
+                } : null}
                 className="inline-flex items-center justify-center rounded-full bg-[#00A651] px-6 py-2 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245]"
                 onClick={() => setShowConfirmation(false)}
               >
