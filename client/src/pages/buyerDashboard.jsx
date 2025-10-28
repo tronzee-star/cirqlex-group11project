@@ -33,7 +33,7 @@ const BuyerDashboard = () => {
     { label: "Shop", icon: FiShoppingBag, to: "/shop" },
     { label: "Go to cart", icon: FiShoppingCart, to: "/cart" },
     { label: "Sustainability Impact", icon: FiTrendingUp, to: null },
-    { label: "Chat with AI", icon: FiMessageCircle, to: null },
+    { label: "Chat with AI", icon: FiMessageCircle, to: "/chat-with-ai" },
   ];
 
   useEffect(() => {
