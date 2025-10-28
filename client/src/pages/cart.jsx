@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from "../context/CardContext.jsx";
 
 const currencyFormatter = new Intl.NumberFormat('en-KE', {
@@ -78,7 +78,7 @@ const CartTable = ({ items, onIncrease, onDecrease, onRemove }) => (
   </div>
 );
 
-const OrderSummary = ({ subtotal, shipping, estimatedTax, total }) => (
+const OrderSummary = ({ subtotal, shipping, estimatedTax, total, onCheckout }) => (
   <div className="rounded-2xl border-2 border-[#C9E6DC] bg-white px-8 py-6 shadow-sm">
     <h3 className="text-lg font-semibold text-[#0C7A60]">Order Summary</h3>
     <dl className="mt-6 space-y-4 text-sm text-[#0C7A60]">
@@ -102,6 +102,7 @@ const OrderSummary = ({ subtotal, shipping, estimatedTax, total }) => (
     <div className="mt-6 flex justify-end">
       <button
         type="button"
+        onClick={onCheckout}
         className="inline-flex items-center justify-center rounded-full bg-[#00A651] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#009245]"
       >
         Proceed to Checkout
@@ -113,6 +114,7 @@ const OrderSummary = ({ subtotal, shipping, estimatedTax, total }) => (
 const CartPage = () => {
   const { items, updateQuantity, removeItem, totals, clearCart } = useCart();
   const hasItems = items.length > 0;
+  const navigate = useNavigate();
 
   const derivedTotals = useMemo(
     () => ({
@@ -136,10 +138,46 @@ const CartPage = () => {
     clearCart();
   };
 
+  const handleBack = () => {
+    navigate('/buyer-dashboard');
+  };
+
+  const handleCheckout = () => {
+    if (!items.length) {
+      return;
+    }
+
+    const receiptData = {
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        priceValue: item.priceValue,
+        image: item.image,
+        subtotal: item.priceValue * item.quantity,
+      })),
+      totals: derivedTotals,
+      generatedAt: new Date().toISOString(),
+    };
+
+    navigate('/checkout/receipt', { state: receiptData });
+  };
+
   return (
     <section className="min-h-screen bg-[#0C7A60]/20 py-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-[32px] border-4 border-[#2AA9B9] bg-white shadow-2xl">
+          <div className="flex items-center justify-between px-6 pt-6 sm:px-10">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="inline-flex items-center gap-2 rounded-full border border-[#0C7A60] bg-[#0C7A60] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#095c48]"
+            >
+              <span aria-hidden>←</span>
+              <span>Back to Dashboard</span>
+            </button>
+            <span className="hidden sm:block w-32" />
+          </div>
           <div className="border-b border-[#2AA9B9]/40 bg-[#0C7A60] px-6 py-6 text-center text-white sm:px-10">
             <h1 className="text-2xl font-semibold sm:text-3xl">Your Cart</h1>
           </div>
@@ -161,7 +199,7 @@ const CartPage = () => {
                 </button>
               </div>
 
-              <OrderSummary {...derivedTotals} />
+              <OrderSummary {...derivedTotals} onCheckout={handleCheckout} />
             </div>
           ) : (
             <div className="px-6 py-14 text-center sm:px-10">
