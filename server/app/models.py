@@ -94,6 +94,8 @@ class Order(db.Model):
                 'owner': owner_data,
                 'image_url': self.product.image_url,
             }
+
+        return data
 class ChatMessage(db.Model):
     __tablename__ = 'chat_messages'
 

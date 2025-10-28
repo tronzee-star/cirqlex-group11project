@@ -4,6 +4,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .. import db
 from ..models import Product, Order, User
+from ..services.ai_service import generate_user_insights
 
 product_bp = Blueprint('products', __name__)
 
@@ -131,7 +132,23 @@ def create_orders():
         db.session.rollback()
         return jsonify({'error': 'failed to create orders', 'details': str(exc)}), 500
 
-    return jsonify({'orders': [order.to_dict(include_product=True) for order in created_orders]}), 201
+    stats_response = get_product_stats()
+    # get_product_stats returns a Response; if called directly we need JSON content
+    if stats_response.status_code == 200:
+        stats_data = stats_response.get_json()
+    else:
+        stats_data = None
+
+    insights = generate_user_insights(
+        user_id=buyer_id,
+        orders=created_orders,
+    )
+
+    return jsonify({
+        'orders': [order.to_dict(include_product=True) for order in created_orders],
+        'dashboard': stats_data,
+        'insights': insights,
+    }), 201
 
 
 @product_bp.route('/<int:product_id>', methods=['GET'])
