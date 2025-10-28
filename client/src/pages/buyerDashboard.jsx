@@ -90,7 +90,10 @@ const BuyerDashboard = () => {
     };
   }, [token]);
 
-  const orders = useMemo(() => stats.recent_orders || [], [stats.recent_orders]);
+  const orders = useMemo(
+    () => (stats.recent_orders || []).filter(Boolean),
+    [stats.recent_orders]
+  );
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-KE", {
@@ -208,12 +211,17 @@ const BuyerDashboard = () => {
                   </thead>
                   <tbody className="text-sm text-gray-700">
                     {orders.map((order) => (
-                      <tr key={order.id} className="border-t border-emerald-50 hover:bg-emerald-50/40">
-                        <td className="py-3 px-4">{order.product?.title || "Listing"}</td>
-                        <td className="py-3 px-4">{order.product?.owner?.name || order.product?.owner?.email || "-"}</td>
-                        <td className="py-3 px-4 text-emerald-700">{formatCurrency(order.price)}</td>
+                      <tr
+                        key={order?.id || Math.random()}
+                        className="border-t border-emerald-50 hover:bg-emerald-50/40"
+                      >
+                        <td className="py-3 px-4">{order?.product?.title || "Listing"}</td>
+                        <td className="py-3 px-4">
+                          {order?.product?.owner?.name || order?.product?.owner?.email || "-"}
+                        </td>
+                        <td className="py-3 px-4 text-emerald-700">{formatCurrency(order?.price)}</td>
                         <td className="py-3 px-4 text-gray-500">
-                          {order.purchased_at
+                          {order?.purchased_at
                             ? new Date(order.purchased_at).toLocaleDateString()
                             : "—"}
                         </td>
