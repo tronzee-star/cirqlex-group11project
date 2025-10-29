@@ -536,24 +536,20 @@ const Shop = () => {
           <div className="mt-10 space-y-6">
             <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border-4 border-[#B872D2]/70 bg-white">
               <img
-                src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=700&q=80"
+                src="https://plus.unsplash.com/premium_photo-1673977133409-b5c2ff90c9b6?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHNob3B8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"
                 alt="Curated eco-friendly lifestyle display"
                 className="h-full w-full object-cover"
               />
-              <span className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#B872D2] text-lg font-semibold text-white shadow-lg">
-                B
-              </span>
+              
             </div>
 
             <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border-4 border-[#0C7A60]/30 bg-white">
               <img
-                src="https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=700&q=80"
+                src="https://plus.unsplash.com/premium_photo-1675660733755-c224251a058b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHNob3B8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"
                 alt="Assortment of sustainable household goods"
                 className="h-full w-full object-cover"
               />
-              <span className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-lg font-semibold text-[#0C7A60] shadow-lg">
-                Eco
-              </span>
+              
             </div>
           </div>
         </aside>
