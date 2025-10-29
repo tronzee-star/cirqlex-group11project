@@ -47,7 +47,7 @@ class Product(db.Model):
             'condition': self.condition,
             'category': self.category,
             'location': self.location,
-            'image_url': self.image_url,
+            'image_url': self.image_url or "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
             'is_donation': self.is_donation,
             'owner_id': self.owner_id,
             'owner': self.owner.to_dict() if hasattr(self, "owner") and self.owner else None,
