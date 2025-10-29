@@ -536,24 +536,20 @@ const Shop = () => {
           <div className="mt-10 space-y-6">
             <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border-4 border-[#B872D2]/70 bg-white">
               <img
-                src="https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&w=700&q=80"
+                src="https://plus.unsplash.com/premium_photo-1673977133409-b5c2ff90c9b6?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHNob3B8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"
                 alt="Curated eco-friendly lifestyle display"
                 className="h-full w-full object-cover"
               />
-              <span className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#B872D2] text-lg font-semibold text-white shadow-lg">
-                B
-              </span>
+              
             </div>
 
             <div className="relative aspect-[2/3] overflow-hidden rounded-3xl border-4 border-[#0C7A60]/30 bg-white">
               <img
-                src="https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=700&q=80"
+                src="https://plus.unsplash.com/premium_photo-1675660733755-c224251a058b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHNob3B8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"
                 alt="Assortment of sustainable household goods"
                 className="h-full w-full object-cover"
               />
-              <span className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-lg font-semibold text-[#0C7A60] shadow-lg">
-                Eco
-              </span>
+              
             </div>
           </div>
         </aside>
@@ -629,6 +625,7 @@ const Shop = () => {
                       key={product.id}
                       {...product}
                       isOwn={isOwnListing}
+                      onEdit={isOwnListing ? () => startEditingProduct(product) : undefined}
                       onDelete={isOwnListing ? () => handleDelete(product.id, product.ownerId) : undefined}
                       onAddToCart={showCartNotification}
                     />
@@ -643,6 +640,134 @@ const Shop = () => {
           </div>
         </main>
       </div>
+
+      {/* Edit Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-2xl rounded-3xl bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-800">Edit Product</h2>
+              <button
+                onClick={closeEditModal}
+                className="text-gray-400 hover:text-gray-600 transition"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {editError && (
+              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+                {editError}
+              </div>
+            )}
+
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <input
+                  type="text"
+                  value={editForm.title}
+                  onChange={(e) => handleEditFieldChange('title', e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#0C7A60] focus:outline-none focus:ring-2 focus:ring-[#0C7A60]/20"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) => handleEditFieldChange('description', e.target.value)}
+                  rows={3}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#0C7A60] focus:outline-none focus:ring-2 focus:ring-[#0C7A60]/20"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (KES)</label>
+                  <input
+                    type="number"
+                    value={editForm.price}
+                    onChange={(e) => handleEditFieldChange('price', e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#0C7A60] focus:outline-none focus:ring-2 focus:ring-[#0C7A60]/20"
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <input
+                    type="text"
+                    value={editForm.category}
+                    onChange={(e) => handleEditFieldChange('category', e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#0C7A60] focus:outline-none focus:ring-2 focus:ring-[#0C7A60]/20"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Condition</label>
+                  <select
+                    value={editForm.condition}
+                    onChange={(e) => handleEditFieldChange('condition', e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#0C7A60] focus:outline-none focus:ring-2 focus:ring-[#0C7A60]/20"
+                  >
+                    <option value="">Select condition</option>
+                    <option value="New">New</option>
+                    <option value="Used - Like New">Used - Like New</option>
+                    <option value="Used - Good">Used - Good</option>
+                    <option value="Pre-loved">Pre-loved</option>
+                    <option value="Vintage">Vintage</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <input
+                    type="text"
+                    value={editForm.location}
+                    onChange={(e) => handleEditFieldChange('location', e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#0C7A60] focus:outline-none focus:ring-2 focus:ring-[#0C7A60]/20"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                <input
+                  type="url"
+                  value={editForm.image_url}
+                  onChange={(e) => handleEditFieldChange('image_url', e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[#0C7A60] focus:outline-none focus:ring-2 focus:ring-[#0C7A60]/20"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="flex-1 rounded-full bg-[#0C7A60] px-6 py-3 font-semibold text-white hover:bg-[#095c48] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSavingEdit ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="flex-1 rounded-full border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

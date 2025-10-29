@@ -286,7 +286,7 @@ const ChatWithAI = () => {
 
         {/* Tips Section */}
         <div className="mt-6 rounded-2xl bg-white/10 p-4 text-white">
-          <h3 className="mb-2 font-semibold">💡 Tips for better answers:</h3>
+          <h3 className="mb-2 font-semibold">!!! Tips for better answers:</h3>
           <ul className="space-y-1 text-sm text-emerald-50">
             <li>• Be specific in your questions</li>
             <li>• Ask about sustainable materials, recycling, or eco-practices</li>
