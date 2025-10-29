@@ -24,20 +24,25 @@ def create_app():
     if isinstance(configured_origins, str):
         configured_origins = [configured_origins]
 
-    default_origins = {"http://localhost:5173", "http://127.0.0.1:5173"}
+    default_origins = {
+        "http://localhost:5173", 
+        "http://127.0.0.1:5173",
+        "https://cirqlex-group11project.onrender.com"
+    }
     origins = [origin.strip() for origin in configured_origins if origin.strip()]
     origins = list(default_origins.union(origins))
 
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": origins,
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-            "allow_headers": ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
-            "supports_credentials": True,
-            "expose_headers": ["Content-Type", "Content-Length"],
-            "max_age": 600
-        }
-    })
+    # Use wildcard for development or if no specific origins configured
+    if app.config.get("DEBUG", False) or not origins:
+        origins = "*"
+
+    CORS(app, 
+         origins=origins,
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+         supports_credentials=True,
+         expose_headers=["Content-Type", "Content-Length"],
+         max_age=600)
 
     # Init extensions
     db.init_app(app)
