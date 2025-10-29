@@ -19,41 +19,26 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(get_config())
 
-    # CORS Configuration with dynamic origin checking
-    from flask import request
+    # CORS Configuration - use regex pattern to match Vercel deployments
+    import re
     
-    def validate_origin(origin):
-        """Allow localhost and any Vercel deployment URLs"""
-        if not origin:
-            return False
-        
-        allowed_patterns = [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "https://cirqlex-group11project.onrender.com",
-        ]
-        
-        # Check exact matches
-        if origin in allowed_patterns:
-            return True
-        
-        # Allow all Vercel preview and production URLs
-        if ".vercel.app" in origin and "cirqlex-group11project" in origin:
-            return True
-            
-        # Check configured origins from env
-        configured_origins = app.config.get("CORS_ORIGINS", [])
-        if isinstance(configured_origins, str):
-            configured_origins = [configured_origins]
-        
-        for allowed in configured_origins:
-            if origin == allowed.strip():
-                return True
-        
-        return False
+    # Build allowed origins list with regex patterns
+    allowed_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://cirqlex-group11project.onrender.com",
+        # Regex pattern to match all Vercel preview and production URLs
+        r"https://cirqlex-group11project.*\.vercel\.app"
+    ]
+    
+    # Add any configured origins from environment
+    configured_origins = app.config.get("CORS_ORIGINS", [])
+    if isinstance(configured_origins, str):
+        configured_origins = [configured_origins]
+    allowed_origins.extend([o.strip() for o in configured_origins if o.strip()])
     
     CORS(app, 
-         origins=validate_origin,
+         origins=allowed_origins,
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
          allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
          supports_credentials=True,
