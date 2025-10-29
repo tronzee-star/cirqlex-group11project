@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Iterable
+from typing import Dict, Iterable, List
 
 import requests
 
@@ -14,8 +14,8 @@ _logger = logging.getLogger(__name__)
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 
-def build_conversation(history: Iterable[dict[str, str]], user_message: str) -> list[dict[str, str]]:
-    messages: list[dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
+def build_conversation(history: Iterable[Dict[str, str]], user_message: str) -> List[Dict[str, str]]:
+    messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
     for message in history:
         role = message.get("role")
         content = (message.get("content") or "").strip()
@@ -25,7 +25,7 @@ def build_conversation(history: Iterable[dict[str, str]], user_message: str) -> 
     return messages
 
 
-def generate_ai_response(user_message: str, history: Iterable[dict[str, str]]) -> str:
+def generate_ai_response(user_message: str, history: Iterable[Dict[str, str]]) -> str:
     api_key = os.getenv("OPENAI_API_KEY")
     conversation = build_conversation(history, user_message)
 
