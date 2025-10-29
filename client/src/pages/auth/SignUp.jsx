@@ -1,14 +1,15 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    email: location.state?.email || "",
     password: "",
     confirmPassword: "",
   });
@@ -105,7 +106,7 @@ try {
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/70 outline-none focus:border-emerald-300 [appearance:textfield]"
+          
         />
       </label>
 
