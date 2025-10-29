@@ -8,6 +8,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='buyer')
     name = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
@@ -19,8 +20,12 @@ class User(db.Model):
             'id': self.id,
             'email': self.email,
             'name': self.name,
+            'role': self.role,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
+
+    def is_admin(self) -> bool:
+        return (self.role or '').lower() == 'admin'
 
 
 class Product(db.Model):
@@ -137,26 +142,31 @@ SAMPLE_USERS = [
         "email": "bonfasogaro@gmail.com",
         "password": "password123",
         "name": "Bonfas",
+        "role": "vendor",
     },
     {
-        "email": "gloria@gmail.com",
+        "email": "admin@gmail.com",
         "password": "password123",
-        "name": "Gloria",
+        "name": "Circular Admin",
+        "role": "admin",
     },
     {
         "email": "amina@cirqlex.com",
         "password": "password123",
         "name": "Amina Craft",
+        "role": "vendor",
     },
     {
         "email": "daniel@cirqlex.com",
         "password": "password123",
         "name": "Daniel Maker",
+        "role": "buyer",
     },
     {
         "email": "lucy@cirqlex.com",
         "password": "password123",
         "name": "Lucy Artisan",
+        "role": "vendor",
     },
 ]
 
@@ -320,6 +330,7 @@ def ensure_sample_data():
             email=sample["email"],
             name=sample.get("name"),
             password_hash=bcrypt.generate_password_hash(sample["password"]).decode("utf-8"),
+            role=sample.get("role", "buyer"),
         )
         db.session.add(user)
         email_to_user[user.email] = user

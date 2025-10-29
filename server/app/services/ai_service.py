@@ -4,7 +4,7 @@ import logging
 import os
 from collections import Counter
 from datetime import datetime, timedelta
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Set
 
 import requests
 from sqlalchemy.orm import joinedload
@@ -139,6 +139,64 @@ def generate_user_insights(
     return insights
 
 
+def generate_platform_insights(timeframe_days: Optional[int] = 180) -> dict:
+    """Aggregate sustainability impact across the entire marketplace."""
+
+    query = Order.query.options(joinedload(Order.product))
+    if timeframe_days and timeframe_days > 0:
+        start_date = datetime.utcnow() - timedelta(days=timeframe_days)
+        query = query.filter(Order.purchased_at >= start_date)
+
+    orders = query.all()
+    if not orders:
+        return _empty_platform_insights()
+
+    total_orders = len(orders)
+    total_spent = sum(order.price or 0 for order in orders)
+    circular_orders = sum(1 for order in orders if _is_circular_purchase(order))
+    reuse_rate = (circular_orders / total_orders) * 100 if total_orders else 0
+
+    buyers: Set[int] = {order.buyer_id for order in orders if order.buyer_id}
+
+    co2_saved = circular_orders * IMPACT_CO2_PER_CIRCULAR_ORDER
+    waste_reduced = total_orders * IMPACT_WASTE_PER_ORDER
+    trees_saved = circular_orders * IMPACT_TREES_PER_CIRCULAR_ORDER
+
+    timeframe_label = f"the last {timeframe_days} days" if timeframe_days else "all-time"
+
+    insights = {
+        "sustainability_score": min(100, round(45 + reuse_rate * 0.4 + min(circular_orders * 3, 30))),
+        "metrics": {
+            "orders_analyzed": total_orders,
+            "circular_purchases": circular_orders,
+            "reuse_rate_pct": round(reuse_rate, 1),
+            "unique_buyers": len(buyers),
+            "total_spent": round(total_spent, 2),
+            "timeframe_days": timeframe_days or None,
+        },
+        "impact": {
+            "co2_saved": _format_kg(co2_saved),
+            "waste_reduced": _format_kg(waste_reduced),
+            "trees_saved": round(trees_saved, 2),
+        },
+    }
+
+    impact = insights["impact"]
+    insights["ai"] = {
+        "environmental_impact": (
+            f"Across {timeframe_label}, the community avoided {impact['co2_saved']} of CO₂ and diverted "
+            f"{impact['waste_reduced']} of waste through {circular_orders} circular purchases."
+        ),
+        "recommended_actions": [
+            "Highlight high-impact categories on the homepage to encourage more reuse.",
+            "Share these sustainability wins with vendors to motivate additional listings.",
+            "Run a campaign focused on donation listings to boost circular purchases further.",
+        ],
+    }
+
+    return insights
+
+
 def _empty_insights() -> dict:
     return {
         "sustainability_score": 0,
@@ -163,6 +221,19 @@ def _empty_insights() -> dict:
             "recommended_actions": [],
         },
     }
+
+
+def _empty_platform_insights() -> dict:
+    base = _empty_insights()
+    base["metrics"].update({
+        "unique_buyers": 0,
+        "total_spent": 0.0,
+    })
+    base["ai"] = {
+        "environmental_impact": None,
+        "recommended_actions": [],
+    }
+    return base
 
 
 def _generate_ai_summary(insights: dict, orders: Iterable[Order]) -> dict:
