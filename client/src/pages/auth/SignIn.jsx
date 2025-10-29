@@ -12,10 +12,12 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [accountNotFound, setAccountNotFound] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setAccountNotFound(false);
 
 const payload = {
   email: email.trim().toLowerCase(),
@@ -42,7 +44,18 @@ try {
     login(data.user, data.access_token);
     navigate("/buyer-dashboard");
   } else {
-    setError(data.error || "Login failed. Please try again.");
+    const errorMessage = data.error || "Login failed. Please try again.";
+    
+    // Check if the error indicates account not found
+    if (errorMessage.toLowerCase().includes("not found") || 
+        errorMessage.toLowerCase().includes("no user") ||
+        errorMessage.toLowerCase().includes("doesn't exist") ||
+        errorMessage.toLowerCase().includes("does not exist")) {
+      setAccountNotFound(true);
+      setError("Account not found. Would you like to create a new account?");
+    } else {
+      setError(errorMessage);
+    }
   }
 } catch (err) {
   console.error("Error logging in:", err);
@@ -61,8 +74,21 @@ try {
         </p>
 
     {error ? (
-      <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-        {error}
+      <div className={`rounded-lg border px-4 py-3 text-sm ${
+        accountNotFound 
+          ? 'border-blue-200 bg-blue-50 text-blue-700' 
+          : 'border-red-200 bg-red-50 text-red-600'
+      }`}>
+        <p className="mb-2">{error}</p>
+        {accountNotFound && (
+          <button
+            type="button"
+            onClick={() => navigate("/signup", { state: { email } })}
+            className="mt-2 w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition"
+          >
+            Create Account
+          </button>
+        )}
       </div>
     ) : null}
 
