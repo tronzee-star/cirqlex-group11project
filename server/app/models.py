@@ -51,8 +51,19 @@ class Product(db.Model):
             'is_donation': self.is_donation,
             'owner_id': self.owner_id,
             'owner': self.owner.to_dict() if hasattr(self, "owner") and self.owner else None,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if hasattr(self, 'updated_at') and self.updated_at else None,
+            'status': getattr(self, 'status', 'approved'),
+            'verified': getattr(self, 'verified', True),
+            'admin_notes': getattr(self, 'admin_notes', None),
+            'co2_savings_per_purchase': round(self.co2_savings_per_purchase, 2),
         }
+
+    @property
+    def co2_savings_per_purchase(self) -> float:
+        """Calculate CO2 savings for this product."""
+        from .utils.sustainability import estimate_product_co2_per_purchase
+        return estimate_product_co2_per_purchase(self)
 
 
 class Order(db.Model):

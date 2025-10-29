@@ -108,23 +108,7 @@ const Sustainability = () => {
     <div className="min-h-screen bg-[#0C7A60] pt-20">
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-6 pb-10">
-        {/* Hero Section with Image */}
-        <section className="mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#FF9933] to-[#FFB366] p-8 shadow-xl">
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="flex-1">
-              <img
-                src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80"
-                alt="Sustainable lifestyle"
-                className="h-48 w-full rounded-2xl object-cover shadow-lg"
-              />
-            </div>
-            <div className="flex-1 text-center md:text-right">
-              <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-[#B872D2] text-3xl font-bold text-white shadow-lg">
-                B
-              </div>
-            </div>
-          </div>
-        </section>
+        
 
         {/* Welcome Message */}
         <section className="mb-8 text-center">
@@ -207,7 +191,7 @@ const Sustainability = () => {
         {/* Impact Metrics Icons */}
         <section className="mb-8 grid grid-cols-2 gap-6 md:grid-cols-4">
           <div className="flex flex-col items-center rounded-2xl bg-white p-6 shadow-md">
-            <div className="mb-3 text-5xl">🌱</div>
+            <div className="mb-3 text-5xl"></div>
             <p className="text-2xl font-bold text-[#0C7A60]">{treesSaved}</p>
             <p className="text-sm text-gray-600">Trees Saved</p>
           </div>
@@ -225,7 +209,7 @@ const Sustainability = () => {
           </div>
           
           <div className="flex flex-col items-center rounded-2xl bg-white p-6 shadow-md">
-            <div className="mb-3 text-5xl">🌍</div>
+            <div className="mb-3 text-5xl"></div>
             <p className="text-2xl font-bold text-[#0C7A60]">{co2Saved}</p>
             <p className="text-sm text-gray-600">CO₂ Offset</p>
           </div>
@@ -242,7 +226,7 @@ const Sustainability = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#00A651] px-4 py-2 text-sm font-semibold">
-                <span>🌿</span>
+                <span></span>
                 <span>Eco Friendly</span>
               </div>
               <h3 className="text-2xl font-bold">Choose Sustainable Products</h3>
@@ -260,7 +244,7 @@ const Sustainability = () => {
             <div className="space-y-3">
               {insights.recommendations.map((tip, index) => (
                 <div key={index} className="flex items-start gap-3 rounded-xl bg-emerald-50 p-4">
-                  <span className="text-2xl">💡</span>
+                  <span className="text-2xl">!!!</span>
                   <p className="text-sm text-gray-700">{tip}</p>
                 </div>
               ))}

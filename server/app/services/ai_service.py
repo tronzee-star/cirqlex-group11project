@@ -4,7 +4,7 @@ import logging
 import os
 from collections import Counter
 from datetime import datetime, timedelta
-from typing import Iterable, Sequence
+from typing import Iterable, Optional, Sequence
 
 import requests
 from sqlalchemy.orm import joinedload
@@ -36,8 +36,8 @@ def _format_kg(value: float) -> str:
 
 def generate_user_insights(
     user_id: int,
-    timeframe_days: int | None = 180,
-    orders: Sequence[Order] | None = None,
+    timeframe_days: Optional[int] = 180,
+    orders: Optional[Sequence[Order]] = None,
 ) -> dict:
     """Build a sustainability impact summary for a specific user."""
 
@@ -246,7 +246,7 @@ def _generate_ai_summary(insights: dict, orders: Iterable[Order]) -> dict:
         }
 
 
-def _parse_json_block(raw_text: str) -> dict | None:
+def _parse_json_block(raw_text: str) -> Optional[dict]:
     """Extract JSON object from a completion that may include code fences."""
 
     text = raw_text.strip()

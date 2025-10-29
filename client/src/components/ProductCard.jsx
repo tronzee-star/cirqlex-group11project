@@ -59,7 +59,7 @@ const ProductCard = ({
         <p className="text-sm text-gray-600">ksh {formattedPrice}</p>
         <div className="flex items-center justify-center">
           <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-            <span role="img" aria-label="leaf">🌿</span>
+            <span role="img" aria-label="leaf"></span>
             Saves {normalizedCo2.toFixed(1)} kg CO₂
           </span>
         </div>
@@ -78,7 +78,7 @@ const ProductCard = ({
             onClick={onEdit}
             className="inline-flex items-center justify-center w-full rounded-full border border-[#0C7A60]/40 bg-white px-4 py-2 text-sm font-semibold text-[#0C7A60] transition-colors hover:border-[#0C7A60] hover:bg-[#E9F7F1]"
           >
-            Edit Listing
+            Edit 
           </button>
         ) : null}
         {isOwn && onDelete ? (
@@ -87,7 +87,7 @@ const ProductCard = ({
             onClick={onDelete}
             className="inline-flex items-center justify-center w-full rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:border-red-300 hover:bg-red-100"
           >
-            Delete Listing
+            Delete 
           </button>
         ) : null}
       </div>
