@@ -5,28 +5,43 @@ import { useAuth } from '../context/AuthContext';
 const Sustainability = () => {
   const chartRef = useRef(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, token } = useAuth();
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchInsights = async () => {
       const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
       
       try {
-        const payload = user?.id ? { buyer_id: user.id, timeframe_days: 180 } : {};
+        if (!token) {
+          setError('Please sign in again to view your impact report.');
+          setInsights(null);
+          return;
+        }
+
         const response = await fetch(`${API_BASE}/insights/`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ timeframe_days: 180 }),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setInsights(data.insights);
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          const message = payload?.error || 'Unable to load sustainability insights.';
+          throw new Error(message);
         }
+
+        const data = await response.json();
+        setInsights(data.insights);
+        setError('');
       } catch (err) {
         console.error('Failed to fetch insights:', err);
+        setError(err.message || 'Unable to load sustainability insights.');
       } finally {
         setLoading(false);
       }
@@ -90,44 +105,9 @@ const Sustainability = () => {
   const sustainabilityScore = insights?.sustainability_score || 0;
 
   return (
-    <div className="min-h-screen bg-[#0C7A60]">
-      {/* Header */}
-      <header className="bg-[#0C7A60] px-6 py-4 shadow-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-bold text-white">cirqlex</h1>
-            <nav className="hidden md:flex items-center gap-6">
-              <button onClick={() => navigate('/')} className="text-sm text-white/80 hover:text-white transition">Home</button>
-              <button onClick={() => navigate('/shop')} className="text-sm text-white/80 hover:text-white transition">Buy</button>
-              <button onClick={() => navigate('/sell')} className="text-sm text-white/80 hover:text-white transition">Sell</button>
-              <button className="text-sm text-white font-semibold border-b-2 border-white pb-1">Sustainability</button>
-              <button onClick={() => navigate('/about')} className="text-sm text-white/80 hover:text-white transition">About us</button>
-            </nav>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative hidden md:block">
-              <input
-                type="text"
-                placeholder="Search"
-                className="rounded-full bg-white/20 px-4 py-2 text-sm text-white placeholder:text-white/60 focus:bg-white/30 focus:outline-none"
-              />
-            </div>
-            <button
-              onClick={logout}
-              className="rounded-full bg-white/20 px-4 py-2 text-sm font-medium text-white hover:bg-white/30 transition"
-            >
-              Log out
-            </button>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#B872D2] text-sm font-semibold text-white">
-              {user?.name?.charAt(0) || 'U'}
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-[#0C7A60] pt-20">
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-6 py-10">
+      <main className="mx-auto max-w-7xl px-6 pb-10">
         {/* Hero Section with Image */}
         <section className="mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-[#FF9933] to-[#FFB366] p-8 shadow-xl">
           <div className="flex flex-col md:flex-row items-center gap-6">
@@ -153,6 +133,12 @@ const Sustainability = () => {
           </h2>
           <p className="mt-2 text-lg text-white/90">Your Sustainability Impact</p>
         </section>
+
+        {error && (
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
 
         {/* KPI Cards */}
         <section className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">

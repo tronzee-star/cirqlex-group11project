@@ -5,6 +5,8 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from config import get_config
+from dotenv import load_dotenv
+load_dotenv()
 
 # Extensions
 db = SQLAlchemy()
@@ -39,10 +41,12 @@ def create_app():
     from .routes.auth_routes import auth_bp
     from .routes.product_routes import product_bp
     from .services.insight_routes import insight_bp
+    from .routes.chat_routes import chat_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(product_bp, url_prefix="/api/products")
     app.register_blueprint(insight_bp, url_prefix="/api/insights")
+    app.register_blueprint(chat_bp, url_prefix="/api/chat")
 
     # Populate development database with sample data if empty
     if app.config.get("DEBUG", False):
