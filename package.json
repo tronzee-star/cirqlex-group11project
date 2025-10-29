@@ -1,0 +1,11 @@
+{
+  "name": "cirqlex-group11project",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "react-router-dom": "^7.9.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.15"
+  }
+}
