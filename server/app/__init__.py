@@ -19,10 +19,18 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(get_config())
 
-    # CORS Configuration
+    # CORS Configuration – allow defaults plus any origins provided via env config
+    configured_origins = app.config.get("CORS_ORIGINS", [])
+    if isinstance(configured_origins, str):
+        configured_origins = [configured_origins]
+
+    default_origins = {"http://localhost:5173", "http://127.0.0.1:5173"}
+    origins = [origin.strip() for origin in configured_origins if origin.strip()]
+    origins = list(default_origins.union(origins))
+
     CORS(app, resources={
         r"/api/*": {
-            "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
+            "origins": origins,
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
             "allow_headers": ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
             "supports_credentials": True,
