@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .. import db
 from ..models import Product, Order, User
-from ..services.ai_service import generate_user_insights
+from ..services.ai_service import generate_user_insights, generate_platform_insights
 
 product_bp = Blueprint('products', __name__)
 
@@ -65,6 +65,34 @@ def get_product_stats():
         'purchases_total': purchases_total,
         'recent_orders': [order.to_dict(include_product=True) for order in buyer_orders],
         'insights': insights,
+    })
+
+
+@product_bp.route('/stats/platform', methods=['GET'])
+@jwt_required()
+def get_platform_stats():
+    """Return aggregated marketplace stats. Admin-only."""
+    identity = get_jwt_identity()
+    try:
+        user_id = int(identity)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'unauthorized'}), 403
+
+    user = User.query.get(user_id)
+    if not user or not user.is_admin():
+        return jsonify({'error': 'forbidden'}), 403
+
+    total_products = Product.query.count()
+    total_orders = Order.query.count()
+    total_revenue = db.session.query(db.func.coalesce(db.func.sum(Order.price), 0.0)).scalar() or 0.0
+
+    platform_insights = generate_platform_insights()
+
+    return jsonify({
+        'listings': total_products,
+        'orders': total_orders,
+        'revenue': total_revenue,
+        'insights': platform_insights,
     })
 
 

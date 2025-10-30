@@ -213,19 +213,7 @@ const BuyerDashboard = () => {
             </div>
           ) : null}
 
-          <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-5 text-center">
-              <h3 className="text-sm font-medium text-emerald-700">Active Listings</h3>
-              <p className="mt-2 text-3xl font-semibold text-emerald-900">
-                {stats.listings || 0}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-5 text-center">
-              <h3 className="text-sm font-medium text-emerald-700">Total Revenue</h3>
-              <p className="mt-2 text-3xl font-semibold text-emerald-900">
-                {formatCurrency(stats.revenue)}
-              </p>
-            </div>
+          <section className="mb-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-5 text-center">
               <h3 className="text-sm font-medium text-emerald-700">Items Purchased</h3>
               <p className="mt-2 text-3xl font-semibold text-emerald-900">
