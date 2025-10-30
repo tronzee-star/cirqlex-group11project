@@ -12,7 +12,7 @@ const authLinks = [];
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, logout, user, isAdmin } = useAuth();
   const { items } = useCart();
 
   const links = isAuthenticated ? authLinks : guestLinks;
@@ -48,34 +48,18 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <>
-              <Link
-                to="/cart"
-                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#0C7A60]/20 text-emerald-100 transition hover:bg-[#0C7A60]/40"
-                aria-label="View cart"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-5 w-5"
+              {isAdmin ? (
+                <Link
+                  to="/admin"
+                  className="hidden rounded-lg bg-[#0C7A60] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#095c48] sm:inline-flex"
                 >
-                  <circle cx="9" cy="21" r="1" />
-                  <circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61l1.38-7.39H6" />
-                </svg>
-                <span
-                  className={`absolute -right-1 -top-1 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#FF6B6B] px-1 text-[11px] font-semibold text-white ${
-                    hasCartItems ? '' : 'scale-0'
-                  } transition-transform`}
-                >
-                  {cartCount}
-                </span>
-              </Link>
-              <span className="hidden text-sm text-emerald-100 sm:inline">Hi, {user?.name?.split(" ")[0] || "Member"}</span>
+                  Control Centre
+                </Link>
+              ) : null}
+              <div className="hidden h-9 w-px bg-emerald-200/40 sm:block" aria-hidden="true" />
+              <span className="hidden text-sm text-emerald-100 sm:inline">
+                {isAdmin ? "Hi, Admin" : `Hi, ${user?.name?.split(" ")[0] || "Member"}`}
+              </span>
               <button
                 type="button"
                 onClick={handleSignOut}

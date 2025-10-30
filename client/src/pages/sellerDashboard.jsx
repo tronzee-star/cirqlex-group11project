@@ -13,7 +13,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
 const SellerDashboard = () => {
-  const { token } = useAuth();
+  const { token, isAdmin } = useAuth();
   const [statSummary, setStatSummary] = useState({
     listings: 0,
     sales: 0,
@@ -35,6 +35,15 @@ const SellerDashboard = () => {
     { label: "Cart", icon: FiShoppingBag, to: "/cart" },
     { label: "Sell an item", icon: FiShoppingBag, to: "/sell" },
     { label: "Payouts", icon: FiDollarSign, to: "/payouts" },
+    ...(isAdmin
+      ? [
+          {
+            label: "Back to Control Center",
+            icon: FiBarChart2,
+            to: "/admin",
+          },
+        ]
+      : []),
   ];
 
   useEffect(() => {

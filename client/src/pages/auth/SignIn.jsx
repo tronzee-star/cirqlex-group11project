@@ -42,7 +42,14 @@ try {
 
   if (response.ok) {
     login(data.user, data.access_token);
-    navigate("/buyer-dashboard");
+    const nextRole = (data.user?.role || "").toLowerCase();
+    if (nextRole === "admin") {
+      navigate("/admin");
+    } else if (nextRole === "vendor") {
+      navigate("/seller-dashboard");
+    } else {
+      navigate("/buyer-dashboard");
+    }
   } else {
     const errorMessage = data.error || "Login failed. Please try again.";
     

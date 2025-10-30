@@ -9,6 +9,7 @@ const ProductCard = ({
   priceValue,
   co2Savings = 0,
   isOwn = false,
+  canDelete = false,
   onDelete,
   onAddToCart,
   onEdit,
@@ -81,7 +82,7 @@ const ProductCard = ({
             Edit 
           </button>
         ) : null}
-        {isOwn && onDelete ? (
+        {canDelete && onDelete ? (
           <button
             type="button"
             onClick={onDelete}
