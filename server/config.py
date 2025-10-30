@@ -11,7 +11,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-jwt-secret-change-in-production")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=7)
-    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173,https://cirqlex-group11project.onrender.com").split(",")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 

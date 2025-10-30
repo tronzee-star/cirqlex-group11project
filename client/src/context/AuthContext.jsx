@@ -50,6 +50,9 @@ export const AuthProvider = ({ children }) => {
       isReady,
       login,
       logout,
+      role: user?.role || null,
+      isAdmin: (user?.role || "").toLowerCase() === "admin",
+      isVendor: (user?.role || "").toLowerCase() === "vendor",
     }),
     [user, token, isReady]
   );

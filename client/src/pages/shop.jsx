@@ -206,7 +206,7 @@ const Shop = () => {
     image_url: '',
   });
   const navigate = useNavigate();
-  const { token, user } = useAuth();
+  const { token, user, isAdmin } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -462,8 +462,10 @@ const Shop = () => {
       return;
     }
 
-    if (!user || ownerId !== user.id) {
-      alert('You can only delete listings you created.');
+    const isOwner = Boolean(user && ownerId === user.id);
+
+    if (!isAdmin && !isOwner) {
+      alert('Only admins or listing owners can delete this listing.');
       return;
     }
 
@@ -619,14 +621,16 @@ const Shop = () => {
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {filteredProducts.map((product) => {
                   const isOwnListing = Boolean(user && product.ownerId && user.id === product.ownerId);
+                  const canDelete = Boolean(isAdmin || isOwnListing);
 
                   return (
                     <ProductCard
                       key={product.id}
                       {...product}
                       isOwn={isOwnListing}
+                      canDelete={canDelete}
                       onEdit={isOwnListing ? () => startEditingProduct(product) : undefined}
-                      onDelete={isOwnListing ? () => handleDelete(product.id, product.ownerId) : undefined}
+                      onDelete={canDelete ? () => handleDelete(product.id, product.ownerId) : undefined}
                       onAddToCart={showCartNotification}
                     />
                   );

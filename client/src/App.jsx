@@ -15,6 +15,7 @@ import SignUp from "./pages/auth/SignUp";
 import About from './pages/About';
 import ChatWithAI from './pages/ChatWithAI';
 import Sustainability from './pages/sustainability';
+import AdminDashboard from './pages/adminDashboard';
 import { useAuth } from "./context/AuthContext.jsx";
 
 const PublicLayout = () => (
@@ -27,7 +28,7 @@ const PublicLayout = () => (
 const AppLayout = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  const authOnlyRoutes = ['/buyer-dashboard', '/seller-dashboard', '/shop', '/chat-with-ai', '/sustainability'];
+  const authOnlyRoutes = ['/buyer-dashboard', '/seller-dashboard', '/shop', '/chat-with-ai', '/sustainability', '/admin'];
   const shouldHideFooter = isAuthenticated || authOnlyRoutes.some((route) => location.pathname.startsWith(route));
 
   return (
@@ -41,8 +42,8 @@ const AppLayout = () => {
   );
 };
 
-const ProtectedRoute = ({ redirectTo = "/signin", children }) => {
-  const { isAuthenticated, isReady } = useAuth();
+const ProtectedRoute = ({ redirectTo = "/signin", allowedRoles, children }) => {
+  const { isAuthenticated, isReady, role } = useAuth();
 
   if (!isReady) {
     return null;
@@ -50,6 +51,21 @@ const ProtectedRoute = ({ redirectTo = "/signin", children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} replace />;
+  }
+
+  const normalizedRole = (role || "").toLowerCase();
+
+  if (Array.isArray(allowedRoles) && allowedRoles.length) {
+    const allowed = allowedRoles.some((item) => item.toLowerCase() === normalizedRole);
+    if (!allowed) {
+      if (normalizedRole === "admin") {
+        return <Navigate to="/admin" replace />;
+      }
+      if (normalizedRole === "vendor") {
+        return <Navigate to="/seller-dashboard" replace />;
+      }
+      return <Navigate to="/buyer-dashboard" replace />;
+    }
   }
 
   return children;
@@ -81,6 +97,14 @@ function App() {
         element={
           <ProtectedRoute>
             <SellerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />

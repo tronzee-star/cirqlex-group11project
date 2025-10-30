@@ -19,17 +19,31 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(get_config())
 
-    # CORS Configuration
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-            "allow_headers": ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
-            "supports_credentials": True,
-            "expose_headers": ["Content-Type", "Content-Length"],
-            "max_age": 600
-        }
-    })
+    # CORS Configuration - use regex pattern to match Vercel deployments
+    import re
+    
+    # Build allowed origins list with regex patterns
+    allowed_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://cirqlex-group11project.onrender.com",
+        # Regex pattern to match all Vercel preview and production URLs
+        r"https://cirqlex-group11project.*\.vercel\.app"
+    ]
+    
+    # Add any configured origins from environment
+    configured_origins = app.config.get("CORS_ORIGINS", [])
+    if isinstance(configured_origins, str):
+        configured_origins = [configured_origins]
+    allowed_origins.extend([o.strip() for o in configured_origins if o.strip()])
+    
+    CORS(app, 
+         origins=allowed_origins,
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+         supports_credentials=True,
+         expose_headers=["Content-Type", "Content-Length"],
+         max_age=600)
 
     # Init extensions
     db.init_app(app)
