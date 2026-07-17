@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from .. import db, bcrypt
 from ..models import User
+from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -19,17 +20,25 @@ def signup():
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Account already exists. Please sign in instead.'}), 400
 
-    pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-    user = User(email=email, password_hash=pw_hash, name=name)
-    db.session.add(user)
-    db.session.commit()
+    try:
+        pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        user = User(email=email, password_hash=pw_hash, name=name)
+        db.session.add(user)
+        db.session.commit()
 
-    token = create_access_token(identity=str(user.id))
-    return jsonify({
-        'message': 'Account created successfully.',
-        'user': user.to_dict(),
-        'access_token': token
-    }), 201
+        token = create_access_token(identity=str(user.id))
+        return jsonify({
+            'message': 'Account created successfully.',
+            'user': user.to_dict(),
+            'access_token': token
+        }), 201
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({'error': 'Account already exists. Please sign in instead.'}), 400
+    except Exception as e:
+        db.session.rollback()
+        print(f"Signup error: {str(e)}")
+        return jsonify({'error': 'Server error. Please try again later.'}), 500
 
 
 @auth_bp.route('/login', methods=['POST'])
